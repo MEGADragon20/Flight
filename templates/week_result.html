@@ -1,0 +1,61 @@
+{% extends "base.html"%}
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-lg shadow-xl p-8">
+        <div class="text-center mb-6">
+            <h1 class="text-4xl font-bold mb-2">📊 Wochenabschluss</h1>
+            <p class="text-gray-600">Woche {{ result.week }}</p>
+        </div>
+        
+        <div class="space-y-4 mb-6">
+            <div class="flex justify-between items-center py-3 border-b">
+                <span class="text-gray-700">✈️ Flüge durchgeführt:</span>
+                <span class="text-xl font-bold">{{ result.flights }}</span>
+            </div>
+            
+            <div class="flex justify-between items-center py-3 border-b">
+                <span class="text-gray-700">💵 Einnahmen:</span>
+                <span class="text-xl font-bold text-green-600">€{{ "{:,.2f}".format(result.revenue) }}</span>
+            </div>
+            
+            <div class="flex justify-between items-center py-3 border-b">
+                <span class="text-gray-700">💸 Flugkosten:</span>
+                <span class="text-xl font-bold text-red-600">-€{{ "{:,.2f}".format(result.cost) }}</span>
+            </div>
+            
+            <div class="flex justify-between items-center py-3 border-b">
+                <span class="text-gray-700">🔧 Wartung:</span>
+                <span class="text-xl font-bold text-red-600">-€{{ "{:,.2f}".format(result.maintenance) }}</span>
+            </div>
+            
+            <div class="flex justify-between items-center py-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg px-4 mt-4">
+                <span class="text-lg font-bold">{% if result.profit >= 0 %}📈{% else %}📉{% endif %} Gewinn/Verlust:</span>
+                <span class="text-3xl font-bold {% if result.profit >= 0 %}text-green-600{% else %}text-red-600{% endif %}">
+                    €{{ "{:,.2f}".format(result.profit) }}
+                </span>
+            </div>
+            
+            <div class="flex justify-between items-center py-4 bg-blue-600 text-white rounded-lg px-4">
+                <span class="text-lg font-bold">💰 Neuer Kontostand:</span>
+                <span class="text-3xl font-bold">€{{ "{:,.2f}".format(result.new_balance) }}</span>
+            </div>
+        </div>
+        
+        {% if result.new_balance < 0 %}
+        <div class="bg-red-50 border-l-4 border-red-600 p-4 mb-6">
+            <p class="font-bold text-red-700">⚠️ WARNUNG: Negatives Guthaben!</p>
+            <p class="text-red-600 text-sm">Du musst profitabler wirtschaften!</p>
+        </div>
+        {% endif %}
+        
+        <div class="text-center space-x-4">
+            <a href="{{ url_for('calendar') }}" class="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition font-semibold">
+                📅 Flüge planen
+            </a>
+            <a href="{{ url_for('index') }}" class="inline-block bg-gray-600 text-white px-8 py-3 rounded-lg hover:bg-gray-700 transition font-semibold">
+                🏠 Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

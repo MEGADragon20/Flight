@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airline Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-hover:hover { transform: translateY(-2px); transition: all 0.3s; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between py-4">
+                <div class="flex items-center space-x-2">
+                    <span class="text-3xl">✈️</span>
+                    <span class="text-2xl font-bold">Airline Manager</span>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <div class="text-right">
+                        <div class="text-sm opacity-90">Woche {{ manager.week }}</div>
+                        <div class="text-2xl font-bold">€{{ "{:,.2f}".format(manager.money) }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex space-x-1 pb-3">
+                <a href="{{ url_for('index') }}" class="px-4 py-2 rounded-t-lg hover:bg-white hover:bg-opacity-20 transition {% if request.endpoint == 'index' %}bg-white bg-opacity-20{% endif %}">📊 Dashboard</a>
+                <a href="{{ url_for('calendar') }}" class="px-4 py-2 rounded-t-lg hover:bg-white hover:bg-opacity-20 transition {% if 'calendar' in request.endpoint %}bg-white bg-opacity-20{% endif %}">📅 Flugplan</a>
+                <a href="{{ url_for('hangar') }}" class="px-4 py-2 rounded-t-lg hover:bg-white hover:bg-opacity-20 transition {% if request.endpoint == 'hangar' %}bg-white bg-opacity-20{% endif %}">✈️ Hangar ({{ manager.planes|length }})</a>
+                <a href="{{ url_for('shop') }}" class="px-4 py-2 rounded-t-lg hover:bg-white hover:bg-opacity-20 transition {% if request.endpoint == 'shop' %}bg-white bg-opacity-20{% endif %}">🛒 Shop</a>
+                <a href="{{ url_for('cities') }}" class="px-4 py-2 rounded-t-lg hover:bg-white hover:bg-opacity-20 transition {% if request.endpoint == 'cities' %}bg-white bg-opacity-20{% endif %}">🌍 Städte</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <div class="container mx-auto px-4 py-8">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

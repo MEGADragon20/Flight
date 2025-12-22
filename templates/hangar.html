@@ -1,0 +1,49 @@
+{% extends "base.html"%}
+{% block content %}
+<div class="bg-white rounded-lg shadow-md p-6">
+    <h1 class="text-3xl font-bold mb-6">✈️ Hangar - Deine Flotte</h1>
+    
+    {% if not manager.planes %}
+        <p class="text-gray-600">Keine Flugzeuge vorhanden.</p>
+    {% else %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for plane in manager.planes %}
+            <div class="border rounded-lg p-5 hover:shadow-lg transition card-hover">
+                <div class="flex items-start justify-between mb-3">
+                    <h3 class="text-xl font-bold">{{ plane.registration }}</h3>
+                    <span class="text-3xl">✈️</span>
+                </div>
+                <p class="text-gray-700 font-semibold mb-3">{{ plane.model.name }}</p>
+                
+                <div class="space-y-2 text-sm mb-4">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Kapazität:</span>
+                        <span class="font-semibold">{{ plane.capacity }} Passagiere</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Max. Reichweite:</span>
+                        <span class="font-semibold">{{ plane.max_distance }} km</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Geschwindigkeit:</span>
+                        <span class="font-semibold">{{ plane.velocity }} km/min</span>
+                    </div>
+                </div>
+                
+                {% if plane.current_city %}
+                <div class="bg-blue-50 p-3 rounded mb-3">
+                    <p class="text-sm text-gray-600">Aktueller Standort:</p>
+                    <p class="font-semibold">{{ plane.current_city.name }}</p>
+                </div>
+                {% endif %}
+                
+                <div class="bg-purple-50 p-3 rounded">
+                    <p class="text-sm text-gray-600">Geplante Flüge:</p>
+                    <p class="font-bold text-purple-600">{{ plane.flights|length }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

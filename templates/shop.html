@@ -1,0 +1,64 @@
+{% extends "base.html"%}
+{% block content %}
+<div class="bg-white rounded-lg shadow-md p-6">
+    <h1 class="text-3xl font-bold mb-6">🛒 Flugzeug-Shop</h1>
+    
+    {% if error %}
+    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+        ❌ {{ error }}
+    </div>
+    {% endif %}
+    
+    <div class="mb-6 bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg">
+        <p class="text-sm text-gray-600">Dein Budget</p>
+        <p class="text-3xl font-bold text-blue-600">€{{ "{:,.2f}".format(manager.money) }}</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for model in manager.available_models %}
+        <div class="border-2 rounded-lg p-5 {% if manager.money >= model.price %}border-green-300 hover:shadow-xl{% else %}border-gray-200 opacity-60{% endif %} transition card-hover">
+            <div class="flex items-start justify-between mb-3">
+                <h3 class="text-lg font-bold">{{ model.name }}</h3>
+                <span class="text-3xl">✈️</span>
+            </div>
+            
+            <div class="mb-4">
+                <p class="text-3xl font-bold text-blue-600">€{{ "{:,}".format(model.price) }}</p>
+            </div>
+            
+            <div class="space-y-2 text-sm mb-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-600">👥 Kapazität:</span>
+                    <span class="font-semibold">{{ model.capacity }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-600">📏 Reichweite:</span>
+                    <span class="font-semibold">{{ model.max_distance }} km</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-600">⚡ Geschwindigkeit:</span>
+                    <span class="font-semibold">{{ model.velocity*60 }} km/h</span>
+                </div>
+            </div>
+            
+            <form method="POST" action="{{ url_for('buy_plane', model_name=model.name) }}">
+                <button type="submit" 
+                        class="w-full py-2 rounded-lg font-semibold transition
+                        {% if manager.money >= model.price %}
+                            bg-green-600 text-white hover:bg-green-700
+                        {% else %}
+                            bg-gray-300 text-gray-500 cursor-not-allowed
+                        {% endif %}"
+                        {% if manager.money < model.price %}disabled{% endif %}>
+                    {% if manager.money >= model.price %}
+                        💳 Kaufen
+                    {% else %}
+                        🔒 Zu teuer
+                    {% endif %}
+                </button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

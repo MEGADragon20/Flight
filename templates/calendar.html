@@ -1,0 +1,142 @@
+{% extends "base.html"%}
+{% block content %}
+<div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h1 class="text-3xl font-bold mb-6">📅 Flugplan - Woche {{ manager.week }}</h1>
+    
+    <!-- Tag-Navigation -->
+    <div class="flex space-x-2 mb-6 overflow-x-auto">
+        {% for day_code, day_name in days.items() %}
+        <a href="{{ url_for('calendar', day=day_code) }}" 
+           class="px-4 py-2 rounded-lg font-semibold transition whitespace-nowrap
+                  {% if current_day == day_code %}
+                      bg-blue-600 text-white
+                  {% else %}
+                      bg-gray-100 text-gray-700 hover:bg-gray-200
+                  {% endif %}">
+            {{ day_name }}
+            <span class="text-xs block">{{ flights_by_day[day_code]|length }} Flüge</span>
+        </a>
+        {% endfor %}
+    </div>
+    
+    <!-- Flug hinzufügen -->
+    <div class="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg mb-6">
+        <h3 class="font-bold mb-3">✈️ Neuen Flug planen</h3>
+        <form method="POST" action="{{ url_for('add_flight') }}" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
+            <input type="hidden" name="day" value="{{ current_day }}">
+            
+            <select name="plane" required class="border rounded px-3 py-2 text-sm">
+                <option value="">Flugzeug</option>
+                {% for plane in manager.planes %}
+                <option value="{{ plane.registration }}">{{ plane.registration }}</option>
+                {% endfor %}
+            </select>
+            
+            <select name="origin" required class="border rounded px-3 py-2 text-sm">
+                <option value="">Von</option>
+                {% for city in manager.cities %}
+                <option value="{{ city.short }}">{{ city.short }}</option>
+                {% endfor %}
+            </select>
+            
+            <select name="destination" required class="border rounded px-3 py-2 text-sm">
+                <option value="">Nach</option>
+                {% for city in manager.cities %}
+                <option value="{{ city.short }}">{{ city.short }}</option>
+                {% endfor %}
+            </select>
+            
+            <input type="number" name="hour" min="0" max="23" placeholder="Stunde" required class="border rounded px-3 py-2 text-sm">
+            <input type="number" name="minute" min="0" max="59" step="5" placeholder="Min" required class="border rounded px-3 py-2 text-sm">
+            <input type="number" name="passengers" min="1" placeholder="Pax" required class="border rounded px-3 py-2 text-sm">
+            
+            <button type="submit" class="col-span-2 bg-green-600 text-white rounded px-4 py-2 hover:bg-green-700 transition text-sm font-semibold">
+                ➕ Flug hinzufügen
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Flugplan-Übersicht -->
+<div class="bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-xl font-bold mb-4">{{ days[current_day] }} - Flugübersicht</h2>
+    
+    {% if not flights_by_day[current_day] %}
+        <p class="text-gray-500 text-center py-8">Keine Flüge für diesen Tag geplant.</p>
+    {% else %}
+        <!-- Gruppiere nach Flugzeug -->
+        {% set ns = namespace(planes_with_flights=[]) %}
+        {% for plane in manager.planes %}
+            {% set plane_flights = [] %}
+            {% for flight in flights_by_day[current_day] %}
+                {% if flight.plane.registration == plane.registration %}
+                    {% set _ = plane_flights.append(flight) %}
+                {% endif %}
+            {% endfor %}
+            {% if plane_flights %}
+                {% set _ = ns.planes_with_flights.append((plane, plane_flights)) %}
+            {% endif %}
+        {% endfor %}
+        
+        <div class="space-y-6">
+            {% for plane, plane_flights in ns.planes_with_flights %}
+            <div class="border-2 border-blue-200 rounded-lg p-4">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-blue-600">✈️ {{ plane.registration }} ({{ plane.model.name }})</h3>
+                    <span class="text-sm text-gray-600">{{ plane_flights|length }} Flüge</span>
+                </div>
+                
+                <div class="space-y-3">
+                    {% for flight in plane_flights %}
+                    <div class="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <span class="text-2xl font-bold text-gray-700">{{ flight.start.format_time() }}</span>
+                                    <span class="text-gray-400">→</span>
+                                    <span class="text-lg font-semibold text-gray-600">{{ flight.end.format_time() }}</span>
+                                    <span class="text-sm text-gray-500">({{ flight.duration }} min)</span>
+                                </div>
+                                <div class="flex items-center space-x-4 text-sm">
+                                    <span class="font-semibold">{{ flight.origin.short }} → {{ flight.destination.short }}</span>
+                                    <span class="text-gray-600">👥 {{ flight.passengers }}/{{ plane.capacity }}</span>
+                                    <span class="text-gray-600">📏 {{ "%.0f"|format(flight.distance) }} km</span>
+                                    <span class="font-semibold {% if flight.calculate_profit() >= 0 %}text-green-600{% else %}text-red-600{% endif %}">
+                                        💰 €{{ "{:,.2f}".format(flight.calculate_profit()) }}
+                                    </span>
+                                </div>
+                            </div>
+                            <form method="POST" action="{{ url_for('delete_flight') }}" class="ml-4">
+                                <input type="hidden" name="plane" value="{{ flight.plane.registration }}">
+                                <input type="hidden" name="start" value="{{ flight.start }}">
+                                <input type="hidden" name="day" value="{{ current_day }}">
+                                <button type="submit" class="text-red-600 hover:text-red-800 font-bold text-xl" onclick="return confirm('Flug löschen?');">
+                                    🗑️
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="mt-6 bg-blue-50 p-4 rounded-lg">
+    <div class="flex justify-between items-center">
+        <span class="font-semibold">
+            Tagesgewinn ({{ days[current_day] }}):
+        </span>
+        <span class="text-xl font-bold
+            {% if day_profit >= 0 %}
+                text-green-600
+            {% else %}
+                text-red-600
+            {% endif %}
+            ">
+                €{{ "{:,.2f}".format(day_profit) }}
+            </span>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
