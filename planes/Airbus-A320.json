@@ -1,0 +1,8 @@
+{
+    "name": "Airbus A320",
+    "capacity": 180,
+    "range": 6150,
+    "velocity": 15,
+    "price": 110000
+
+}

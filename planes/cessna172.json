@@ -1,0 +1,7 @@
+{
+    "name": "Cessna 172",
+    "capacity": 4,
+    "range": 1200,
+    "velocity": 4,
+    "price": 15000
+}

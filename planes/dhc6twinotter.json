@@ -1,0 +1,7 @@
+{
+    "name": "DHC-6 Twin Otter",
+    "capacity": 19,
+    "range": 1400,
+    "velocity": 9,
+    "price": 35000
+}

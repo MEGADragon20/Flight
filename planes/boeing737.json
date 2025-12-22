@@ -1,0 +1,7 @@
+{
+    "name": "Boeing 737",
+    "capacity": 189,
+    "range": 3550,
+    "velocity": 15,
+    "price": 100000
+}

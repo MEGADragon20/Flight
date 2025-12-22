@@ -6,10 +6,10 @@ Starte mit: python app.py
 Dann öffne: http://localhost:5000
 """
 
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import Flask, json, render_template, request, redirect, url_for, session, jsonify
 import math
+from pathlib import Path
 from typing import List, Optional
-import json
 import secrets
 
 app = Flask(__name__)
@@ -84,10 +84,10 @@ class City:
 
 
 class PlaneModel:
-    def __init__(self, name: str, capacity: int, max_distance: int, velocity: int, price: int):
+    def __init__(self, name: str, capacity: int, range: int, velocity: int, price: int):
         self.name = name
         self.capacity = capacity
-        self.max_distance = max_distance
+        self.range = range
         self.velocity = velocity
         self.price = price
     
@@ -95,14 +95,14 @@ class PlaneModel:
         return {
             'name': self.name,
             'capacity': self.capacity,
-            'max_distance': self.max_distance,
+            'range': self.range,
             'velocity': self.velocity,
             'price': self.price
         }
     
     @classmethod
     def from_dict(cls, data):
-        return cls(data['name'], data['capacity'], data['max_distance'], 
+        return cls(data['name'], data['capacity'], data['range'], 
                    data['velocity'], data['price'])
 
 
@@ -111,7 +111,7 @@ class Plane:
         self.model = model
         self.registration = registration
         self.capacity = model.capacity
-        self.max_distance = model.max_distance
+        self.range = model.range
         self.velocity = model.velocity
         self.current_city: Optional[City] = None
         self.flights: List['Flight'] = []
@@ -134,7 +134,7 @@ class Plane:
         return plane
     
     def can_fly(self, distance: float) -> bool:
-        return distance <= self.max_distance
+        return distance <= self.range
 
 
 class Flight:
@@ -206,18 +206,11 @@ class AirlineManager:
             City("Amsterdam", 820000, -300, -300, "AMS"),
         ]
         
-        starter_model = PlaneModel("Dash 8 Q200", 50, 2000, 40, 50000)
-        self.available_models = [
-            PlaneModel("Cessna 172", 4, 1200, 4, 15000),
-            PlaneModel("DHC-6 Twin Otter", 19, 1400, 30, 35000),
-            starter_model,
-            PlaneModel("ATR 72", 70, 1500, 45, 80000),
-            PlaneModel("Boeing 737", 180, 5500, 70, 250000),
-            PlaneModel("Airbus A320", 180, 6100, 75, 280000),
-            PlaneModel("Boeing 787", 330, 14000, 90, 650000),
-            PlaneModel("Airbus A350", 350, 15000, 95, 700000),
-        ]
-        
+        starter_model = PlaneModel("Dash 8 Q200", 39, 2000, 3, 50000)
+        path = Path("planes")
+        for json_file in path.glob("*.json"):
+            with json_file.open("r", encoding="utf-8") as f:
+                self.available_models.append(PlaneModel.from_dict(json.load(f)))
         
         starter_plane = Plane(starter_model, f"D-GAME{self.plane_counter}")
         starter_plane.current_city = self.cities[0]
