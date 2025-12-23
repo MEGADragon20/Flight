@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h1 class="text-3xl font-bold mb-6">✈️ Flugzeug kaufen</h1>
+    <div class="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg mb-6">
+        <h3 class="font-bold mb-3">Konfiguriere: <span>{{ model.name }}</span> </h3>
+    <form action="{{ url_for('buy_plane', model_name=model.name) }}" method="post" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
+        <label for="registration">Registration:</label>
+        <input type="text" name="registration" id="registration" required placeholder="Name" class="border rounded px-3 py-2 text-sm">
+        <label for="city">Startstadt:</label>
+        <select name="city" id="city" class="border rounded px-3 py-2 text-sm">
+            {% for city in manager.cities %}
+            <option value="{{ city.short }}">{{ city.short }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <button type="submit" class="col-span-2 bg-green-600 text-white rounded px-4 py-2 hover:bg-green-700 transition text-sm font-semibold">
+            💳 Flugzeug kaufen
+        </button>
+    </form>
+{% endblock %}

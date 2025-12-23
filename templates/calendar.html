@@ -25,31 +25,35 @@
         <form method="POST" action="{{ url_for('add_flight') }}" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
             <input type="hidden" name="day" value="{{ current_day }}">
             
-            <select name="plane" required class="border rounded px-3 py-2 text-sm">
-                <option value="">Flugzeug</option>
+            <select name="plane" id="plane-select" required class="border rounded px-3 py-2 text-sm">
+                <option value="" disabled hidden selected>Flugzeug</option>
                 {% for plane in manager.planes %}
-                <option value="{{ plane.registration }}">{{ plane.registration }}</option>
+                    <option value="{{ plane.registration }}"
+                        data-capacity="{{ plane.capacity }}"
+                        data-current-city='{{ plane.current_city.short }}'>
+                        {{ plane.registration }}
+                    </option>
                 {% endfor %}
             </select>
             
-            <select name="origin" required class="border rounded px-3 py-2 text-sm">
-                <option value="">Von</option>
+            <select name="origin" id="origin-select" required class="border rounded px-3 py-2 text-sm">
+                <option value="" disabled hidden selected>Von</option>
                 {% for city in manager.cities %}
                 <option value="{{ city.short }}">{{ city.short }}</option>
                 {% endfor %}
             </select>
             
             <select name="destination" required class="border rounded px-3 py-2 text-sm">
-                <option value="">Nach</option>
+                <option value="" disabled hidden selected>Nach</option>
                 {% for city in manager.cities %}
                 <option value="{{ city.short }}">{{ city.short }}</option>
                 {% endfor %}
             </select>
             
             <input type="number" name="hour" min="0" max="23" placeholder="Stunde" required class="border rounded px-3 py-2 text-sm">
-            <input type="number" name="minute" min="0" max="59" step="5" placeholder="Min" required class="border rounded px-3 py-2 text-sm">
-            <input type="number" name="passengers" min="1" placeholder="Pax" required class="border rounded px-3 py-2 text-sm">
-            
+            <input type="number" name="minute" min="0" max="55" step="5" placeholder="Min" required class="border rounded px-3 py-2 text-sm">
+            <input type="number" name="passengers" id = "passengers" placeholder="Pax" required class="border rounded px-3 py-2 text-sm">
+
             <button type="submit" class="col-span-2 bg-green-600 text-white rounded px-4 py-2 hover:bg-green-700 transition text-sm font-semibold">
                 ➕ Flug hinzufügen
             </button>
@@ -139,4 +143,17 @@
     </div>
     {% endif %}
 </div>
+<script>
+document.getElementById('plane-select').addEventListener('change', function () {
+    const selected = this.options[this.selectedIndex];
+    const capacity = selected.dataset.capacity;
+
+    if (capacity) {
+        document.getElementById('passengers').value = capacity;
+        document.getElementById('passengers').max = capacity;
+        document.getElementById('origin-select').value = selected.dataset.currentCity;
+    }
+});
+</script>
+
 {% endblock %}

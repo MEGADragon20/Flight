@@ -212,7 +212,7 @@ class AirlineManager:
             with json_file.open("r", encoding="utf-8") as f:
                 self.available_models.append(PlaneModel.from_dict(json.load(f)))
         
-        starter_plane = Plane(starter_model, f"D-GAME{self.plane_counter}")
+        starter_plane = Plane(starter_model, f"Starter")
         starter_plane.current_city = self.cities[0]
         self.planes.append(starter_plane)
         self.plane_counter += 1
@@ -256,22 +256,22 @@ class AirlineManager:
             if plane.registration.lower() == registration.lower():
                 return plane
         return None
-    
-    def buy_plane(self, model_name: str) -> Plane:
-        model = None
-        for m in self.available_models:
-            if m.name.lower() == model_name.lower():
-                model = m
-                break
-        
+
+    def find_model(self, name: str) -> Optional[PlaneModel]:
+        for model in self.available_models:
+            if model.name.lower() == name.lower():
+                return model
+        return None
+
+    def buy_plane(self, model_name: str, registration: str) -> Plane:
+        model = self.find_model(model_name)
         if not model:
             raise ValueError(f"Flugzeugmodell '{model_name}' nicht gefunden")
-        
+
         if self.money < model.price:
             raise ValueError(f"Nicht genug Geld!")
         
         self.money -= model.price
-        registration = f"D-GAME{self.plane_counter}"
         self.plane_counter += 1
         
         plane = Plane(model, registration)
@@ -393,7 +393,7 @@ def save_manager(manager):
 @app.route('/')
 def index():
     manager = get_manager()
-    
+
     # Berechne erwarteten Gewinn
     expected_profit = sum(f.calculate_profit() for f in manager.flights)
     expected_profit -= len(manager.planes) * 500
@@ -412,15 +412,24 @@ def shop():
     manager = get_manager()
     return render_template("shop.html", manager=manager)
 
+@app.route('/shop/view/<model_name>', methods=['POST','GET'])
+def view_plane(model_name):
+    manager = get_manager()
+    model = manager.find_model(model_name)
+    if not model:
+        return render_template("shop.html", manager=manager, error="Flugzeugmodell nicht gefunden.")
+    return render_template("buy_plane.html", manager=manager, model=model)
+
 @app.route('/shop/buy/<model_name>', methods=['POST'])
 def buy_plane(model_name):
     manager = get_manager()
     try:
-        manager.buy_plane(model_name)
+        manager.buy_plane(model_name, request.form['registration'])
         save_manager(manager)
         return redirect(url_for('hangar'))
     except ValueError as e:
         return render_template("shop.html", manager=manager, error=str(e))
+
 
 @app.route('/cities')
 def cities():

@@ -41,7 +41,7 @@
                 </div>
             </div>
             
-            <form method="POST" action="{{ url_for('buy_plane', model_name=model.name) }}">
+            <form method="POST" action="{{ url_for('view_plane', model_name=model.name) }}">
                 <button type="submit" 
                         class="w-full py-2 rounded-lg font-semibold transition
                         {% if manager.money >= model.price %}

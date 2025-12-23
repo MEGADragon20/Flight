@@ -1,0 +1,7 @@
+{
+    "name": "Boeing 777-200LR",
+    "capacity": 301,
+    "range": 15700,
+    "velocity": 17,
+    "price": 320000000
+}
