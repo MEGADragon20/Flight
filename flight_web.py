@@ -263,7 +263,7 @@ class AirlineManager:
                 return model
         return None
 
-    def buy_plane(self, model_name: str, registration: str) -> Plane:
+    def buy_plane(self, model_name: str, registration: str, city: City) -> Plane:
         model = self.find_model(model_name)
         if not model:
             raise ValueError(f"Flugzeugmodell '{model_name}' nicht gefunden")
@@ -275,7 +275,7 @@ class AirlineManager:
         self.plane_counter += 1
         
         plane = Plane(model, registration)
-        plane.current_city = self.cities[0]
+        plane.current_city = city
         self.planes.append(plane)
         
         return plane
@@ -424,7 +424,7 @@ def view_plane(model_name):
 def buy_plane(model_name):
     manager = get_manager()
     try:
-        manager.buy_plane(model_name, request.form['registration'])
+        manager.buy_plane(model_name, request.form['registration'], manager.find_city(request.form['city']))
         save_manager(manager)
         return redirect(url_for('hangar'))
     except ValueError as e:
