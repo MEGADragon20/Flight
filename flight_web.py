@@ -80,7 +80,22 @@ class City:
         return cls(data['name'], data['population'], data['x'], data['y'], data['short'])
     
     def distance_to(self, other: 'City') -> float:
-        return math.sqrt((self.x - other.x)**2 + (self.y - other.y)**2)
+        EARTH_RADIUS_KM = 6371.0
+
+        lat1 = math.radians(self.x)
+        lon1 = math.radians(self.y)
+        lat2 = math.radians(other.x)
+        lon2 = math.radians(other.y)
+
+        dlat = lat2 - lat1
+        dlon = lon2 - lon1
+
+        a = math.sin(dlat / 2)**2 + \
+            math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2)**2
+
+        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+        return EARTH_RADIUS_KM * c
 
 
 class PlaneModel:
@@ -198,14 +213,14 @@ class AirlineManager:
     def _initialize_game(self):
         # cities, need a way to automatise this
         self.cities = [
-            City("Berlin", 3700000, 0, 0, "BER"),
-            City("München", 1500000, 500, 600, "MUC"),
-            City("Hamburg", 1800000, -100, -400, "HAM"),
-            City("Frankfurt", 750000, 300, 200, "FRA"),
-            City("Köln", 1100000, -200, 100, "CGN"),
-            City("Paris", 2200000, -500, 300, "CDG"),
-            City("London", 8900000, -800, -200, "LHR"),
-            City("Amsterdam", 820000, -300, -300, "AMS"),
+            City("Berlin", 3700000, 52.5200, 13.4050, "BER"),
+            City("München", 1500000, 48.1351, 11.5820, "MUC"),
+            City("Hamburg", 1800000, 53.5511, 9.9937, "HAM"),
+            City("Frankfurt", 750000, 50.1109, 8.6821, "FRA"),
+            City("Köln", 1100000, 50.9375, 6.9603, "CGN"),
+            City("Paris", 2200000, 48.8566, 2.3522, "CDG"),
+            City("London", 8900000, 51.5074, -0.1278, "LHR"),
+            City("Amsterdam", 820000, 52.3676, 4.9041, "AMS"),
         ]
 
         self.update_demand()
