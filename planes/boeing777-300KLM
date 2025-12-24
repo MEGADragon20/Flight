@@ -1,0 +1,19 @@
+{
+    "name": "Boeing 777-300 KLM",
+    "capacity": 400,
+    "range": 10000,
+    "velocity": 900,
+    "price": 30000000,
+    "seat_configs": [
+        {
+            "name": "V1",
+            "business": 35,
+            "economy": 390
+        },
+        {
+            "name": "V2",
+            "business": 34,
+            "economy": 374
+        }
+    ]
+}

@@ -5,6 +5,7 @@
     
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {% for city in manager.cities %}
+        <a href="{{ url_for('view_city', city_name=city.name) }}">
         <div class="border rounded-lg p-4 hover:shadow-lg transition card-hover">
             <div class="flex items-center justify-between mb-2">
                 <h3 class="text-xl font-bold">{{ city.short }}</h3>
@@ -16,6 +17,7 @@
                 <p class="text-xs mt-2">📍 Position: ({{ city.x }}, {{ city.y }})</p>
             </div>
         </div>
+        </a>
         {% endfor %}
     </div>
     
@@ -24,4 +26,7 @@
         <p class="text-sm text-gray-700">Größere Städte haben mehr potenzielle Passagiere. Plane deine Routen strategisch!</p>
     </div>
 </div>
+<script>
+    // Add your JavaScript here
+</script>
 {% endblock %}

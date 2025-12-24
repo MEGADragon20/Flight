@@ -10,7 +10,7 @@ from flask import Flask, json, render_template, request, redirect, url_for, sess
 import math
 from pathlib import Path
 from typing import List, Optional
-import secrets
+import secrets, random
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
@@ -188,6 +188,7 @@ class AirlineManager:
         self.cities: List[City] = []
         self.planes: List[Plane] = []
         self.flights: List[Flight] = []
+        self.demand: dict[str, dict[str, int]] = {}
         self.money: float = 50000.0
         self.week: int = 1
         self.plane_counter: int = 1
@@ -195,6 +196,7 @@ class AirlineManager:
         self._initialize_game()
     
     def _initialize_game(self):
+        # cities, need a way to automatise this
         self.cities = [
             City("Berlin", 3700000, 0, 0, "BER"),
             City("München", 1500000, 500, 600, "MUC"),
@@ -205,7 +207,11 @@ class AirlineManager:
             City("London", 8900000, -800, -200, "LHR"),
             City("Amsterdam", 820000, -300, -300, "AMS"),
         ]
-        
+
+        self.update_demand()
+        print(self.demand)
+
+        # planes available
         starter_model = PlaneModel("Dash 8 Q200", 39, 2000, 3, 50000)
         path = Path("planes")
         for json_file in path.glob("*.json"):
@@ -225,7 +231,8 @@ class AirlineManager:
             'money': self.money,
             'week': self.week,
             'plane_counter': self.plane_counter,
-            'available_models': [m.to_dict() for m in self.available_models]
+            'available_models': [m.to_dict() for m in self.available_models],
+            'demand': self.demand
         }
     
     @classmethod
@@ -243,6 +250,7 @@ class AirlineManager:
         manager.money = data['money']
         manager.week = data['week']
         manager.plane_counter = data['plane_counter']
+        manager.demand = data['demand']
         return manager
     
     def find_city(self, name: str) -> Optional[City]:
@@ -336,7 +344,14 @@ class AirlineManager:
                     issues.append(f"{plane.registration}: Zeitüberschneidung")
         
         return issues
-    
+
+    def update_demand(self):
+        self.demand.clear()
+        for i in self.cities:
+            self.demand[i.short] = {}
+            for j in self.cities:
+                self.demand[i.short][j.short] = get_route_demand(i, j)
+
     def advance_week(self) -> dict:
         issues = self.check_flight_plan()
         if issues:
@@ -372,6 +387,36 @@ class AirlineManager:
             'profit': total_profit,
             'new_balance': self.money
         }
+
+
+def get_route_demand(origin: City, destination: City) -> int | None:
+    if origin == destination:
+        return None
+
+    o = origin.population
+    p = destination.population
+
+    d = origin.distance_to(destination)
+    d = max(d, 1)
+
+    peak = 4000          # km where demand is strongest
+    width = 3000         # how wide the sweet spot is
+
+    distance_factor = math.exp(-((d - peak)**2) / (2 * width**2))
+
+    pop_factor = (math.sqrt(o) * math.sqrt(p)) / 1000
+
+    demand = pop_factor * (1 + 2 * distance_factor)
+
+    # Big hubs stay relevant even when far away
+    if d > 6000:
+        hub_bonus = math.log10(o * p) / 10
+        demand *= (1 + hub_bonus)
+
+    demand *= random.uniform(0.09, 0.11)
+
+    return round(max(demand, 0))
+
 
 
 # ==================== FLASK ROUTES ====================
@@ -435,6 +480,14 @@ def buy_plane(model_name):
 def cities():
     manager = get_manager()
     return render_template("cities.html", manager=manager)
+
+@app.route('/cities/view/<city_name>')
+def view_city(city_name):
+    manager = get_manager()
+    city = manager.find_city(city_name)
+    if not city:
+        return render_template("cities.html", manager=manager, error="Stadt nicht gefunden.")
+    return render_template("view_city.html", manager=manager, city=city)
 
 @app.route('/calendar')
 @app.route('/calendar/<day>')

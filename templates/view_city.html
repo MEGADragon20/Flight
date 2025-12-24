@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <div class="flex items-center justify-between mb  -4">
+        <h1 class="text-3xl font-bold">
+            🌍 {{ city.name }} ({{ city.short }})
+        </h1>
+        <span class="text-gray-600">
+            {{ city.country if city.country else "" }}
+        </span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+        <div class="p-4 bg-gray-50 rounded-lg">
+            <div class="text-sm text-gray-500">Bevölkerung</div>
+            <div class="text-2xl font-bold">
+                {{ "{:,}".format(city.population) if city.population else "—" }}
+            </div>
+        </div>
+
+        <div class="p-4 bg-gray-50 rounded-lg">
+            <div class="text-sm text-gray-500">Position</div>
+            <div class="text-2xl font-bold">{{ city.x }}|{{ city.y }}</div>
+        </div>
+
+        <div class="p-4 bg-gray-50 rounded-lg">
+            <div class="text-sm text-gray-500">Zukünftige Features</div>
+            <div class="text-lg font-semibold">
+                Lounges • Hub-Status • Terminal-Ausbau
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Demand Panels -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <!-- Incoming Demand -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-bold mb-3">
+            👥 Nachfrage nach {{ city.short }} (Eingehend)
+        </h2>
+        <p class="text-gray-500 mb-3 text-sm">
+            Passagiernachfrage von anderen Städten zu diesem Ziel.
+        </p>
+{% set incoming = [] %}
+{% for other in manager.cities %}
+    {% if other.short != city.short %}
+        {% set value = manager.demand.get(other.short, {}).get(city.short, 0) %}
+        {% set _ = incoming.append((other, value)) %}
+    {% endif %}
+{% endfor %}
+
+        {% if not incoming %}
+            <p class="text-gray-500 py-4 text-center">Keine Daten verfügbar.</p>
+        {% else %}
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="text-left text-gray-600 border-b">
+                        <th class="py-2">Stadt</th>
+                        <th class="py-2 text-right">Nachfrage</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+
+{% for other, value in incoming|sort(attribute=1, reverse=True) %}
+<tr class="border-b hover:bg-gray-50">
+    <td class="py-2 font-semibold">{{ other.name }} ({{ other.short }})</td>
+    <td class="py-2 text-right">{{ value }}</td>
+</tr>
+{% endfor %}
+</tbody>
+
+
+            </table>
+        {% endif %}
+    </div>
+
+    <!-- Outgoing Demand -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-bold mb-3">
+            ✈️ Nachfrage von {{ city.short }} (Ausgehend)
+        </h2>
+        <p class="text-gray-500 mb-3 text-sm">
+            Passagiernachfrage von dieser Stadt zu anderen Zielen.
+        </p>
+
+{% set outgoing = [] %}
+{% for other in manager.cities %}
+    {% if other.short != city.short %}
+        {% set value = manager.demand.get(city.short, {}).get(other.short, 0) %}
+        {% set _ = outgoing.append((other, value)) %}
+    {% endif %}
+{% endfor %}
+
+        {% if not outgoing %}
+            <p class="text-gray-500 py-4 text-center">Keine Daten verfügbar.</p>
+        {% else %}
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="text-left text-gray-600 border-b">
+                        <th class="py-2">Ziel</th>
+                        <th class="py-2 text-right">Nachfrage</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+
+{% for other, value in outgoing|sort(attribute=1, reverse=True) %}
+<tr class="border-b hover:bg-gray-50">
+    <td class="py-2 font-semibold">{{ other.name }} ({{ other.short }})</td>
+    <td class="py-2 text-right">{{ value }}</td>
+</tr>
+{% endfor %}
+</tbody>
+
+
+            </table>
+        {% endif %}
+    </div>
+
+</div>
+
+<!-- Reserved expansion space -->
+<div class="mt-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6">
+    <h3 class="font-bold mb-2">🏗️ Stadt-Features (Platzhalter)</h3>
+    <p class="text-gray-600 text-sm">
+        Hier können später Hub-Upgrades, Lounges, Infrastrukturwerte und Bonus-Effekte erscheinen.
+    </p>
+</div>
+
+{% endblock %}
