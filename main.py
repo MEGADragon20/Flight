@@ -85,12 +85,13 @@ class City:
 
 
 class PlaneModel:
-    def __init__(self, name: str, capacity: int, range: int, velocity: int, price: int):
+    def __init__(self, name: str, capacity: int, range: int, velocity: int, price: int, maintenance: int):
         self.name = name
         self.capacity = capacity
         self.range = range
         self.velocity = velocity
         self.price = price
+        self.maintenance = maintenance
     
     def to_dict(self):
         return {
@@ -98,13 +99,14 @@ class PlaneModel:
             'capacity': self.capacity,
             'range': self.range,
             'velocity': self.velocity,
-            'price': self.price
+            'price': self.price,
+            'maintenance': self.maintenance
         }
     
     @classmethod
     def from_dict(cls, data):
         return cls(data['name'], data['capacity'], data['range'], 
-                   data['velocity'], data['price'])
+                   data['velocity'], data['price'], data['maintenance'])
 
 
 class Plane:
@@ -116,6 +118,7 @@ class Plane:
         self.velocity = model.velocity
         self.current_city: Optional[City] = None
         self.flights: List['Flight'] = []
+        self.maintenance = model.maintenance
     
     def to_dict(self):
         return {
@@ -210,15 +213,16 @@ class AirlineManager:
         ]
 
         self.update_demand()
-        print(self.demand)
 
         # planes available
-        starter_model = PlaneModel("Dash 8 Q200", 39, 2000, 3, 50000)
+        starter_model = PlaneModel("Dash 8 Q200", 39, 2000, 3, 50000, 200)
         path = Path("planes")
-        for json_file in path.glob("*.json"):
+        for json_file in path.glob("**/*.json"):
             with json_file.open("r", encoding="utf-8") as f:
-                self.available_models.append(PlaneModel.from_dict(json.load(f)))
-        
+                data = json.load(f)
+                print(data["name"])
+                self.available_models.append(PlaneModel.from_dict(data))
+
         starter_plane = Plane(starter_model, f"Starter")
         starter_plane.current_city = self.cities[0]
         self.planes.append(starter_plane)
@@ -353,11 +357,20 @@ class AirlineManager:
             for j in self.cities:
                 self.demand[i.short][j.short] = get_route_demand(i, j)
 
+    def flights_for_plane(self, plane):
+        return [f for f in self.flights if f.plane == plane]
+
+    def calculate_maintenance(self) -> float:
+        total_maintenance = 0
+        for plane in self.planes:
+            total_maintenance += plane.maintenance*(len(self.flights_for_plane(plane)) + 1)
+        return total_maintenance
+
     def advance_week(self) -> dict:
         issues = self.check_flight_plan()
         if issues:
             raise ValueError("Flugplan ungültig!")
-        
+
         total_revenue = 0
         total_cost = 0
         flight_count = len(self.flights)
@@ -366,8 +379,7 @@ class AirlineManager:
             total_revenue += flight.calculate_revenue()
             total_cost += flight.calculate_cost()
             flight.plane.current_city = flight.destination
-        
-        maintenance = len(self.planes) * 500
+        maintenance = self.calculate_maintenance()
         total_cost += maintenance
         total_profit = total_revenue - total_cost
         

@@ -1,0 +1,9 @@
+{
+    "name": "Airbus A220-300",
+    "capacity": 140,
+    "range": 6667,
+    "velocity": 14.5,
+    "price": 30000000,
+    "fuel": 21918,
+    "maintenance": 800
+}

@@ -26,7 +26,7 @@ def index():
 
     # Berechne erwarteten Gewinn
     expected_profit = sum(f.calculate_profit() for f in manager.flights)
-    expected_profit -= len(manager.planes) * 500
+    expected_profit -= manager.calculate_maintenance()
     
     issues = manager.check_flight_plan()
 

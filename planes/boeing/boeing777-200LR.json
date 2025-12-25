@@ -3,5 +3,6 @@
     "capacity": 301,
     "range": 15700,
     "velocity": 17,
-    "price": 320000000
+    "price": 320000000,
+    "maintenance": 3000
 }
