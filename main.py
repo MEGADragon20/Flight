@@ -432,7 +432,7 @@ def get_route_demand(origin: City, destination: City, week: int) -> int | None:
         hub_bonus = math.log10(o * p) / 10
         demand *= (1 + hub_bonus)
 
-    random.seed(hash(origin.name, destination.population, week))
+    random.seed(hash(origin.name + destination.name + str(week)))
     demand *= random.uniform(0.09, 0.11)
 
     return round(max(demand, 0))
