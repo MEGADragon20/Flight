@@ -23,10 +23,7 @@ def load_models() -> List['PlaneModel']:
             models.append(PlaneModel.from_dict(data))
     return models
 
-GAME_WORLD = {
-    "cities": load_cities(),
-    "models": load_models()
-}
+
 
 class Instant:
     DAYS = {'M': 'Monday', 'T': 'Tuesday', 'W': 'Wednesday', 
@@ -211,6 +208,10 @@ class Flight:
 
 
 # ==================== GAME MANAGER ====================
+GAME_WORLD = {
+    "cities": load_cities(),
+    "models": [PlaneModel("Dash 8 Q200", 39, 2000, 3, 50000, 200)] + load_models()
+}
 
 class AirlineManager:
     def __init__(self):
@@ -229,35 +230,28 @@ class AirlineManager:
         self.update_demand()
 
         # planes available
-        starter_model = PlaneModel("Dash 8 Q200", 39, 2000, 3, 50000, 200)
-        path = Path("planes")
-        for json_file in path.glob("**/*.json"):
-            with json_file.open("r", encoding="utf-8") as f:
-                data = json.load(f)
-                self.available_models.append(PlaneModel.from_dict(data))
+        self.available_models = GAME_WORLD["models"]
 
-        starter_plane = Plane(starter_model, f"Starter")
+        starter_plane = Plane(self.available_models[0], f"Starter")
         starter_plane.current_city = self.cities[0]
         self.planes.append(starter_plane)
         self.plane_counter += 1
     
     def to_dict(self):
         return {
-            'cities': [c.to_dict() for c in self.cities],
             'planes': [p.to_dict() for p in self.planes],
             'flights': [f.to_dict() for f in self.flights],
             'money': self.money,
             'week': self.week,
             'plane_counter': self.plane_counter,
-            'available_models': [m.to_dict() for m in self.available_models],
             'demand': self.demand
         }
     
     @classmethod
     def from_dict(cls, data):
         manager = cls.__new__(cls)
-        manager.cities = [City.from_dict(c) for c in data['cities']]
-        manager.available_models = [PlaneModel.from_dict(m) for m in data['available_models']]
+        manager.cities = GAME_WORLD['cities']
+        manager.available_models = GAME_WORLD['models']
         manager.planes = [Plane.from_dict(p, manager.cities) for p in data['planes']]
         manager.flights = [Flight.from_dict(f, manager.cities, manager.planes) 
                           for f in data['flights']]
