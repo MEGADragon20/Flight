@@ -1,9 +1,13 @@
 import secrets
 from flask import Flask, render_template, session, redirect, url_for, request, app
 from main import AirlineManager, Instant
+from flask_session import Session
 
 
 app = Flask(__name__)
+app.config['SESSION_TYPE'] = 'filesystem'  # or redis
+app.config['SESSION_PERMANENT'] = False
+Session(app)
 app.secret_key = secrets.token_hex(16)
 
 def get_manager():

@@ -9,7 +9,17 @@
         <div class="border rounded-lg p-4 hover:shadow-lg transition card-hover">
             <div class="flex items-center justify-between mb-2">
                 <h3 class="text-xl font-bold">{{ city.short }}</h3>
-                <span class="text-2xl">🏙️</span>
+                {% set snippets = [
+                    '<span class="text-2xl">🌆</span>',
+                    '<span class="text-2xl">🏙️</span>',
+                    '<span class="text-2xl">🌇</span>',
+                    '<span class="text-2xl">🌉</span>',
+                    '<span class="text-2xl">🏞️</span>',
+                    '<span class="text-2xl">🌃</span>',
+                    '<span class="text-2xl">🌆</span>'
+                ] %}
+
+                {{ snippets | random | safe }}
             </div>
             <p class="text-lg font-semibold text-gray-700 mb-2">{{ city.name }}</p>
             <div class="text-sm text-gray-600">

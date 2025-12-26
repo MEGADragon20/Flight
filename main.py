@@ -2,6 +2,31 @@ import random, math
 from typing import List, Optional
 from pathlib import Path
 from flask import json
+import csv
+
+def load_cities() -> List['City']:
+    cities = []
+    with open("cities.csv", "r", encoding="utf-8") as f:
+            reader = csv.reader(f)
+            for row in reader:
+                if row:
+                    city = City(row[0], int(row[1]), float(row[2]), float(row[3]), row[4])
+                    cities.append(city)
+    return cities
+
+def load_models() -> List['PlaneModel']:
+    models = []
+    path = Path("planes")
+    for json_file in path.glob("**/*.json"):
+        with json_file.open("r", encoding="utf-8") as f:
+            data = json.load(f)
+            models.append(PlaneModel.from_dict(data))
+    return models
+
+GAME_WORLD = {
+    "cities": load_cities(),
+    "models": load_models()
+}
 
 class Instant:
     DAYS = {'M': 'Monday', 'T': 'Tuesday', 'W': 'Wednesday', 
@@ -200,18 +225,7 @@ class AirlineManager:
         self._initialize_game()
     
     def _initialize_game(self):
-        # cities, need a way to automatise this
-        self.cities = [
-            City("Berlin", 3700000, 52.5200, 13.4050, "BER"),
-            City("München", 1500000, 48.1351, 11.5820, "MUC"),
-            City("Hamburg", 1800000, 53.5511, 9.9937, "HAM"),
-            City("Frankfurt", 750000, 50.1109, 8.6821, "FRA"),
-            City("Köln", 1100000, 50.9375, 6.9603, "CGN"),
-            City("Paris", 2200000, 48.8566, 2.3522, "CDG"),
-            City("London", 8900000, 51.5074, -0.1278, "LHR"),
-            City("Amsterdam", 820000, 52.3676, 4.9041, "AMS"),
-        ]
-
+        self.cities = GAME_WORLD["cities"]
         self.update_demand()
 
         # planes available
@@ -220,7 +234,6 @@ class AirlineManager:
         for json_file in path.glob("**/*.json"):
             with json_file.open("r", encoding="utf-8") as f:
                 data = json.load(f)
-                print(data["name"])
                 self.available_models.append(PlaneModel.from_dict(data))
 
         starter_plane = Plane(starter_model, f"Starter")
@@ -412,8 +425,8 @@ def get_route_demand(origin: City, destination: City) -> int | None:
     d = origin.distance_to(destination)
     d = max(d, 1)
 
-    peak = 4000          # km where demand is strongest
-    width = 3000         # how wide the sweet spot is
+    peak = 3000      # km where demand is strongest
+    width = 2000         # how wide the sweet spot is
 
     distance_factor = math.exp(-((d - peak)**2) / (2 * width**2))
 
