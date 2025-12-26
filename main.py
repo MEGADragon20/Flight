@@ -228,8 +228,6 @@ class AirlineManager:
     def _initialize_game(self):
         self.cities = GAME_WORLD["cities"]
         self.update_demand()
-
-        # planes available
         self.available_models = GAME_WORLD["models"]
 
         starter_plane = Plane(self.available_models[0], f"Starter")
@@ -358,11 +356,12 @@ class AirlineManager:
         return issues
 
     def update_demand(self):
-        self.demand.clear()
+        if self.demand != {}:
+            self.demand.clear()
         for i in self.cities:
             self.demand[i.short] = {}
             for j in self.cities:
-                self.demand[i.short][j.short] = get_route_demand(i, j)
+                self.demand[i.short][j.short] = get_route_demand(i, j, self.week)
 
     def flights_for_plane(self, plane):
         return [f for f in self.flights if f.plane == plane]
@@ -409,7 +408,7 @@ class AirlineManager:
         }
 
 
-def get_route_demand(origin: City, destination: City) -> int | None:
+def get_route_demand(origin: City, destination: City, week: int) -> int | None:
     if origin == destination:
         return None
 
@@ -433,6 +432,7 @@ def get_route_demand(origin: City, destination: City) -> int | None:
         hub_bonus = math.log10(o * p) / 10
         demand *= (1 + hub_bonus)
 
+    random.seed(hash(origin.name, destination.population, week))
     demand *= random.uniform(0.09, 0.11)
 
     return round(max(demand, 0))
