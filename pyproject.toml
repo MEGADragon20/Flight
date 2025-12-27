@@ -1,2 +1,0 @@
-[project.scripts]
-app = "api.vercel_app:app"
