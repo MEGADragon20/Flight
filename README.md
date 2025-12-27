@@ -33,3 +33,23 @@ Activate the venv, on Linux/MacOS with `source .venv/bin/activate` and on Window
 After that, install all dependencies running `pip install -r requirements.txt`.
 
 then simply run `python3 start.py` and visit the game on <localhost:5000>!
+
+
+## TODO's
+#### Time & Demand
+[x] hour-depending demand -> when are people willing to come to the airport
+[ ] UTC, cities have timezones(constant)
+[ ] Flights are filled depending on demand
+[ ] Flight rentablility (aprox 80% of pax)
+
+#### Lounges & Terminals
+[x] City interface
+[ ] Reform city class // add Hub class
+[ ] Add Lounges to profitability
+
+#### Player & Tutorial
+[ ] Starting Plane, Hubs, Money etc, select name of Enterprise
+[ ] Tutorial or small Documentation `/wiki/get_started`
+[ ] create accounts, email, username etc
+[ ] Save data for multiple users. 
+[ ] **P**v**P** (?)
