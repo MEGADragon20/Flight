@@ -454,15 +454,15 @@ def get_route_demand(origin: City, destination: City, week: int) -> int | None:
 
 def get_potential_passenger_demand(demand: int, hours: int, minutes: int) -> int:
     def distribution_for_time(t):
-        a = 2
+        a = 0.4
         d1 = 1.5
         d2 = 4
         d3 = 2
         b1 = math.exp(-((t - 7) ** 2) / (2 * d1 ** 2)) # Früh peak
         b2 = math.exp(-((t - 12) ** 2) / (2 * d2 ** 2)) # Mittag peak
         b3 = math.exp(-((t - 18) ** 2) / (2 * d3 ** 2)) # Abend peak
-        return a/math.sqrt(math.pi)*(b1 + b2 + b3)
+        return a/math.sqrt(math.pi)*(b1 + b2 + b3)+0.1
     total_minutes = hours * 60 + minutes
     exact_hours = total_minutes / 60
-    potential_demand = demand * (distribution_for_time(exact_hours) + distribution_for_time((exact_hours - 1))) 
+    potential_demand = demand * (distribution_for_time(exact_hours) + distribution_for_time((exact_hours - 1))) + 0.2
     return round(potential_demand)

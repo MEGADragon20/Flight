@@ -1,6 +1,6 @@
 import secrets, os, redis
 from flask import Flask, render_template, session, redirect, url_for, request, app
-from main import AirlineManager, Instant
+from main import AirlineManager, Instant, get_potential_passenger_demand, get_route_demand
 from flask_session import Session
 
 USE_REDIS = os.getenv("USE_REDIS")
@@ -82,6 +82,18 @@ def create_app():
         if not city:
             return render_template("cities.html", manager=manager, error="Stadt nicht gefunden.")
         return render_template("view_city.html", manager=manager, city=city)
+
+    @app.route('/routes/<origin>/<destination>')
+    def view_route(origin, destination):
+        manager = get_manager()
+        origin_city = manager.find_city(origin)
+        destination_city = manager.find_city(destination)
+        passenger_availability = {}
+        total_demand = get_route_demand(origin_city, destination_city, manager.week)
+        for i in range(24):
+            passenger_availability[i] = get_potential_passenger_demand(total_demand, i, 0)
+        distance = round(origin_city.distance_to(destination_city))
+        return render_template("route.html", manager=manager, passenger_availability=passenger_availability, origin=origin_city, destination=destination_city, total=total_demand, distance=distance)
 
     @app.route('/calendar')
     @app.route('/calendar/<day>')

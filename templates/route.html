@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h1 class="text-3xl font-bold mb-4">Route Details<span class="text-gray-500 text-sm ml-2">{{ origin.short }} ⇢ {{ destination.short }}</span></h1>
+
+        <div class="mb-6">
+            <p class="text-lg"><span class="font-semibold">Distance:</span> {{ distance }} km</p>
+            <p class="text-lg"><span class="font-semibold">Total Demand:</span> {{ total }} Passengers</p>
+        </div>
+
+        <h2 class="text-2xl font-semibold mb-4">Passenger Availability</h2>
+        <div class="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg mb-6">
+            <div class="space-y-2">
+                <h3 class="text-gray-500 font-semibold">Hourly Demand</h3>
+                    {% for hour, demand in passenger_availability.items() %}
+                        {% set width_percent = ((demand / total) * 100) | round(2) %}
+                        <div class="flex items-center space-x-4">
+                            <span class="w-12 text-right font-medium">{{ hour }}</span>
+                            <div class="flex-1 h-6 bg-gray-200 rounded-full overflow-hidden">
+                                <div class="h-6 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full transition-all duration-1000 ease-out"
+                                style="width: 0%;" data-target-width="{{ width_percent }}%">
+                                </div>
+                            </div>
+                            <span class="w-12 text-right font-medium">{{ demand }}</span>
+                        </div>
+                    {% endfor %}
+            </div>
+        </div>
+    </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll('[data-target-width]').forEach(bar => {
+        const width = bar.getAttribute('data-target-width');
+        // tiny delay for staggered effect
+        setTimeout(() => {
+            bar.style.width = width;
+        }, 100);
+    });
+});
+</script>
+{% endblock %}

@@ -62,16 +62,16 @@
                         <th class="py-2 text-right">Nachfrage</th>
                     </tr>
                 </thead>
-                <tbody>
-
-
+        <tbody>
 {% for other, value in incoming|sort(attribute=1, reverse=True) %}
-<tr class="border-b hover:bg-gray-50">
-    <td class="py-2 font-semibold">{{ other.name }} ({{ other.short }})</td>
-    <td class="py-2 text-right">{{ value }}</td>
-</tr>
+    <tr class="border-b hover:bg-gray-50 cursor-pointer"
+        onclick="location.href='{{ url_for('view_route', origin=other.name, destination=city.name) }}'">
+        <td class="py-2 font-semibold">{{ other.name }} ({{ other.short }})</td>
+        <td class="py-2 text-right">{{ value }}</td>
+    </tr>
 {% endfor %}
 </tbody>
+
 
 
             </table>
@@ -108,12 +108,13 @@
                 <tbody>
 
 
-{% for other, value in outgoing|sort(attribute=1, reverse=True) %}
-<tr class="border-b hover:bg-gray-50">
-    <td class="py-2 font-semibold">{{ other.name }} ({{ other.short }})</td>
-    <td class="py-2 text-right">{{ value }}</td>
-</tr>
-{% endfor %}
+            {% for other, value in outgoing|sort(attribute=1, reverse=True) %}
+                <tr class="border-b hover:bg-gray-50 cursor-pointer"
+                    onclick="location.href='{{ url_for('view_route', origin=city.name, destination=other.name) }}'">
+                    <td class="py-2 font-semibold">{{ other.name }} ({{ other.short }})</td>
+                    <td class="py-2 text-right">{{ value }}</td>
+                </tr>
+            {% endfor %}
 </tbody>
 
 
