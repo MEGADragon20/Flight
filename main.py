@@ -144,19 +144,22 @@ class Plane:
     
     def to_dict(self):
         return {
-            'model': self.model.to_dict(),
+            'model': self.model.name,
             'registration': self.registration,
-            'current_city': self.current_city.to_dict() if self.current_city else None,
-            'flight_count': len(self.flights)
+            'current_city': self.current_city.short if self.current_city else None,
         }
-    
+
     @classmethod
-    def from_dict(cls, data, cities):
-        model = PlaneModel.from_dict(data['model'])
+    def from_dict(cls, data):
+        models = get_models()
+        model = next((m for m in models if m.name == data['model']), None)
+
         plane = cls(model, data['registration'])
+        cities = get_cities()
         if data['current_city']:
-            city_short = data['current_city']['short']
+            city_short = data['current_city']
             plane.current_city = next((c for c in cities if c.short == city_short), None)
+
         return plane
     
     def can_fly(self, distance: float) -> bool:
@@ -179,20 +182,18 @@ class Flight:
     
     def to_dict(self):
         return {
-            'origin': self.origin.to_dict(),
-            'destination': self.destination.to_dict(),
+            'origin': self.origin.short,
+            'destination': self.destination.short,
             'plane_registration': self.plane.registration,
             'passengers': self.passengers,
             'start': self.start.to_dict(),
-            'distance': self.distance,
-            'duration': self.duration,
-            'profit': self.calculate_profit()
         }
     
     @classmethod
-    def from_dict(cls, data, cities, planes):
-        origin = next(c for c in cities if c.short == data['origin']['short'])
-        dest = next(c for c in cities if c.short == data['destination']['short'])
+    def from_dict(cls, data, planes):
+        cities = get_cities()
+        origin = next(c for c in cities if c.short == data['origin'])
+        dest = next(c for c in cities if c.short == data['destination'])
         plane = next(p for p in planes if p.registration == data['plane_registration'])
         start = Instant.from_dict(data['start'])
         return cls(origin, dest, plane, start, data['passengers'])
@@ -213,6 +214,20 @@ GAME_WORLD = {
     "models": [PlaneModel("Dash 8 Q200", 39, 2000, 3, 50000, 200)] + load_models()
 }
 
+def get_cities() -> List[City]:
+    if GAME_WORLD is not None:
+        return GAME_WORLD["cities"]
+    GAME_WORLD["cities"] = load_cities()
+    GAME_WORLD["models"] = [PlaneModel("Dash 8 Q200", 39, 2000, 3, 50000, 200)] + load_models()
+    return GAME_WORLD["cities"]
+
+def get_models() -> List[PlaneModel]:
+    if GAME_WORLD is not None:
+        return GAME_WORLD["models"]
+    GAME_WORLD["cities"] = load_cities()
+    GAME_WORLD["models"] = [PlaneModel("Dash 8 Q200", 39, 2000, 3, 50000, 200)] + load_models()
+    return GAME_WORLD["models"]
+
 class AirlineManager:
     def __init__(self):
         self.cities: List[City] = []
@@ -226,9 +241,9 @@ class AirlineManager:
         self._initialize_game()
     
     def _initialize_game(self):
-        self.cities = GAME_WORLD["cities"]
+        self.cities = get_cities()
         self.update_demand()
-        self.available_models = GAME_WORLD["models"]
+        self.available_models = get_models()
 
         starter_plane = Plane(self.available_models[0], f"Starter")
         starter_plane.current_city = self.cities[0]
@@ -241,17 +256,15 @@ class AirlineManager:
             'flights': [f.to_dict() for f in self.flights],
             'money': self.money,
             'week': self.week,
-            'plane_counter': self.plane_counter,
-            'demand': self.demand
         }
     
     @classmethod
     def from_dict(cls, data):
         manager = cls.__new__(cls)
-        manager.cities = GAME_WORLD['cities']
-        manager.available_models = GAME_WORLD['models']
-        manager.planes = [Plane.from_dict(p, manager.cities) for p in data['planes']]
-        manager.flights = [Flight.from_dict(f, manager.cities, manager.planes) 
+        manager.cities = get_cities()
+        manager.available_models = get_models()
+        manager.planes = [Plane.from_dict(p) for p in data['planes']]
+        manager.flights = [Flight.from_dict(f, manager.planes) 
                           for f in data['flights']]
         
         for plane in manager.planes:
@@ -259,8 +272,9 @@ class AirlineManager:
         
         manager.money = data['money']
         manager.week = data['week']
-        manager.plane_counter = data['plane_counter']
-        manager.demand = data['demand']
+        manager.plane_counter = len(manager.planes)
+        manager.demand = {}
+        manager.update_demand()
         return manager
     
     def find_city(self, name: str) -> Optional[City]:
@@ -436,3 +450,19 @@ def get_route_demand(origin: City, destination: City, week: int) -> int | None:
     demand *= random.uniform(0.09, 0.11)
 
     return round(max(demand, 0))
+
+
+def get_potential_passenger_demand(demand: int, hours: int, minutes: int) -> int:
+    def distribution_for_time(t):
+        a = 2
+        d1 = 1.5
+        d2 = 4
+        d3 = 2
+        b1 = math.exp(-((t - 7) ** 2) / (2 * d1 ** 2)) # Früh peak
+        b2 = math.exp(-((t - 12) ** 2) / (2 * d2 ** 2)) # Mittag peak
+        b3 = math.exp(-((t - 18) ** 2) / (2 * d3 ** 2)) # Abend peak
+        return a/math.sqrt(math.pi)*(b1 + b2 + b3)
+    total_minutes = hours * 60 + minutes
+    exact_hours = total_minutes / 60
+    potential_demand = demand * (distribution_for_time(exact_hours) + distribution_for_time((exact_hours - 1))) 
+    return round(potential_demand)
