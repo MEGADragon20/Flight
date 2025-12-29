@@ -91,7 +91,7 @@ def create_app():
         passenger_availability = {}
         total_demand = get_route_demand(origin_city, destination_city, manager.week)
         for i in range(24):
-            passenger_availability[i] = get_potential_passenger_demand(total_demand, i, 0)
+            passenger_availability[i] = get_potential_passenger_demand(total_demand, i, 0, origin_city.timezone)
         distance = round(origin_city.distance_to(destination_city))
         return render_template("route.html", manager=manager, passenger_availability=passenger_availability, origin=origin_city, destination=destination_city, total=total_demand, distance=distance)
 

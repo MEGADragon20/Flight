@@ -10,7 +10,7 @@ def load_cities() -> List['City']:
             reader = csv.reader(f)
             for row in reader:
                 if row:
-                    city = City(row[0], int(row[1]), float(row[2]), float(row[3]), row[4])
+                    city = City(row[0], int(row[1]), float(row[2]), float(row[3]), row[4], float(row[5]))
                     cities.append(city)
     return cities
 
@@ -67,12 +67,13 @@ class Instant:
 
 
 class City:
-    def __init__(self, name: str, population: int, x: int, y: int, short: str):
+    def __init__(self, name: str, population: int, x: int, y: int, short: str, timezone: float):
         self.name = name
         self.population = population
         self.x = x
         self.y = y
         self.short = short
+        self.timezone = timezone
     
     def to_dict(self):
         return {
@@ -80,12 +81,13 @@ class City:
             'population': self.population,
             'x': self.x,
             'y': self.y,
-            'short': self.short
+            'short': self.short,
+            'timezone': self.timezone
         }
     
     @classmethod
     def from_dict(cls, data):
-        return cls(data['name'], data['population'], data['x'], data['y'], data['short'])
+        return cls(data['name'], data['population'], data['x'], data['y'], data['short'], data['timezone'])
     
     def distance_to(self, other: 'City') -> float:
         EARTH_RADIUS_KM = 6371.0
@@ -452,8 +454,12 @@ def get_route_demand(origin: City, destination: City, week: int) -> int | None:
     return round(max(demand, 0))
 
 
-def get_potential_passenger_demand(demand: int, hours: int, minutes: int) -> int:
+def get_potential_passenger_demand(demand: int, hours: int, minutes: int, timezone: float) -> int:
     def distribution_for_time(t):
+        if t > 23:
+            t -= 24
+        elif t < 0:
+            t += 24
         a = 0.4
         d1 = 1.5
         d2 = 4
@@ -464,5 +470,5 @@ def get_potential_passenger_demand(demand: int, hours: int, minutes: int) -> int
         return a/math.sqrt(math.pi)*(b1 + b2 + b3)+0.1
     total_minutes = hours * 60 + minutes
     exact_hours = total_minutes / 60
-    potential_demand = demand * (distribution_for_time(exact_hours) + distribution_for_time((exact_hours - 1))) + 0.2
+    potential_demand = demand * (distribution_for_time(exact_hours-timezone) + distribution_for_time((exact_hours - timezone - 1))) + 0.2
     return round(potential_demand)
