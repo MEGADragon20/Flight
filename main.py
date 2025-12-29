@@ -314,25 +314,28 @@ class AirlineManager:
         
         return plane
     
-    def create_flight(self, origin_name: str, dest_name: str, 
-                     plane_reg: str, start: Instant, passengers: int) -> Flight:
+    def create_flight(self, origin_name: str, dest_name: str, plane_reg: str, start: Instant, max_passengers: int) -> Flight:
         origin = self.find_city(origin_name)
         destination = self.find_city(dest_name)
         plane = self.find_plane(plane_reg)
-        
+        distance = origin.distance_to(destination)
+
         if not origin or not destination or not plane:
             raise ValueError("Stadt oder Flugzeug nicht gefunden")
-        
-        if passengers > plane.capacity:
+        if max_passengers > plane.capacity:
             raise ValueError(f"Zu viele Passagiere! Max: {plane.capacity}")
-        
-        distance = origin.distance_to(destination)
         if not plane.can_fly(distance):
             raise ValueError(f"Flugzeug kann diese Distanz nicht fliegen")
         
+        pot_passengers = get_potential_passenger_demand(get_route_demand(origin, destination, self.week), start.hour, start.minute, origin.timezone)
+        currently_flewn_passengers = self.check_route_usage(origin.short, destination.short, start)
+        available_demand = round((pot_passengers - currently_flewn_passengers) * 0.8) # 80% because always someone flys
+        passengers = min(max_passengers, available_demand)
+
         flight = Flight(origin, destination, plane, start, passengers)
         self.flights.append(flight)
         plane.flights.append(flight)
+        
         return flight
     
     def delete_flight(self, plane_reg: str, start_str: str) -> bool:
@@ -370,6 +373,19 @@ class AirlineManager:
                     issues.append(f"{plane.registration}: Zeitüberschneidung")
         
         return issues
+
+    def check_route_usage(self, origin: str, destination: str, time: Instant) -> int:
+        """Überprüft die Nutzung der Routen"""
+        route_usage = 0
+        for flight in self.flights:
+            if flight.origin.short == origin and flight.destination.short == destination:
+                if time is not None:
+                    if flight.start.to_minutes() == time.to_minutes():
+                        route_usage += flight.passengers
+                else:
+                    route_usage += flight.passengers
+
+        return route_usage
 
     def update_demand(self):
         if self.demand != {}:

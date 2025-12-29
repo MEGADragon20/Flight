@@ -1,10 +1,11 @@
-import secrets, os, redis
+import os, redis
 from flask import Flask, render_template, session, redirect, url_for, request, app
 from main import AirlineManager, Instant, get_potential_passenger_demand, get_route_demand
 from flask_session import Session
 
 USE_REDIS = os.getenv("USE_REDIS")
 REDIS_URL = os.getenv("REDIS_URL")
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 def create_app():
     app = Flask(__name__)
@@ -13,7 +14,7 @@ def create_app():
     app.config['SESSION_REDIS'] = redis.from_url(REDIS_URL) if USE_REDIS == '1' else None
     app.config['SESSION_PERMANENT'] = False
     Session(app)
-    app.secret_key = secrets.token_hex(16)
+    app.secret_key = SECRET_KEY
 
     def get_manager():
         """Holt oder erstellt Manager aus Session"""
@@ -124,10 +125,10 @@ def create_app():
             day = request.form['day']
             hour = int(request.form['hour'])
             minute = int(request.form['minute'])
-            passengers = int(request.form['passengers'])
-            
+            max_passengers = int(request.form['passengers'])
             start = Instant(day, hour, minute)
-            manager.create_flight(origin, destination, plane, start, passengers)
+            
+            manager.create_flight(origin, destination, plane, start, max_passengers)
             save_manager(manager)
             
             return redirect(url_for('calendar', day=day))
