@@ -1,8 +1,25 @@
 {
     "name": "Airbus A380",
-    "capacity": 555,
-    "range": 15700,
-    "velocity": 15,
+    "capacity": 558, 
+    "range": 15200,
+    "velocity": 15.6,
     "price": 400000,
-    "maintenance": 2500
+    "maintenance": 2500,
+    "pilots": 4,
+    "seat_configs": [
+        {
+            "name": "Standard",
+            "economy": 399,
+            "premium": 0,
+            "business": 60,
+            "first": 12
+        },
+        {
+            "name": "High Density",
+            "economy": 538,
+            "premium": 30,
+            "business": 0,
+            "first": 0
+        }
+    ]
 }

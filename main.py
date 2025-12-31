@@ -109,13 +109,14 @@ class City:
 
 
 class PlaneModel:
-    def __init__(self, name: str, capacity: int, range: int, velocity: int, price: int, maintenance: int):
+    def __init__(self, name: str, capacity: int, range: int, velocity: int, price: int, maintenance: int, pilots: int):
         self.name = name
         self.capacity = capacity
         self.range = range
         self.velocity = velocity
         self.price = price
         self.maintenance = maintenance
+        self.pilots = pilots
     
     def to_dict(self):
         return {
@@ -130,7 +131,7 @@ class PlaneModel:
     @classmethod
     def from_dict(cls, data):
         return cls(data['name'], data['capacity'], data['range'], 
-                   data['velocity'], data['price'], data['maintenance'])
+                   data['velocity'], data['price'], data['maintenance'], data['pilots'])
 
 
 class Plane:
@@ -143,7 +144,8 @@ class Plane:
         self.current_city: Optional[City] = None
         self.flights: List['Flight'] = []
         self.maintenance = model.maintenance
-    
+        self.pilots = model.pilots
+
     def to_dict(self):
         return {
             'model': self.model.name,
@@ -169,9 +171,8 @@ class Plane:
 
 
 class Flight:
-    TICKETPRICE_PER_PAX = 0.15
     FUELCOST_PER_KM = 0.08
-    PILOT_SALARY = 1000 # make this dependent of flight duration
+    PILOT_SALARY_PER_MINUTE = 0.67 # make this dependent of flight duration
     
     def __init__(self, origin: City, destination: City, plane: Plane, start: Instant, passengers: int):
         self.origin = origin
@@ -202,13 +203,19 @@ class Flight:
         return cls(origin, dest, plane, start, data['passengers'])
     
     def calculate_revenue(self) -> float:
-        return self.passengers * self.TICKETPRICE_PER_PAX
+        if self.distance < 500:
+            ticket_price = 0.25
+        elif self.distance < 1000:
+            ticket_price = 0.2
+        else:
+            ticket_price = 0.15
+        return self.passengers * ticket_price * self.distance
 
     def calculate_variable_cost(self) -> float:
-        return self.distance * self.FUELCOST_PER_KM
+        return self.distance * self.FUELCOST_PER_KM # make this model dependent
 
     def calculate_fixed_cost(self) -> float:
-        return self.plane.maintenance + self.plane.pilots*PILOT_SALARY
+        return self.plane.maintenance + self.plane.pilots*self.PILOT_SALARY_PER_MINUTE*self.duration
 
     def calculate_profit(self) -> float:
         return self.calculate_revenue() - self.calculate_variable_cost() - self.calculate_fixed_cost()
@@ -217,7 +224,7 @@ class Flight:
 # ==================== GAME MANAGER ====================
 GAME_WORLD = {
     "cities": load_cities(),
-    "models": [PlaneModel("Dash 8 Q200", 39, 2000, 3, 50000, 200)] + load_models()
+    "models": [PlaneModel("Dash 8 Q200", 39, 2000, 3, 50000, 200, 2)] + load_models()
 }
 
 def get_cities() -> List[City]:
@@ -402,11 +409,11 @@ class AirlineManager:
     def flights_for_plane(self, plane):
         return [f for f in self.flights if f.plane == plane]
 
-    def calculate_maintenance(self) -> float:
-        total_maintenance = 0
+    def calculate_weekly_maintenance(self) -> float:
+        total_weekly_maintenance = 0
         for plane in self.planes:
-            total_maintenance += plane.maintenance*(len(self.flights_for_plane(plane)) + 1)
-        return total_maintenance
+            total_weekly_maintenance += plane.maintenance
+        return total_weekly_maintenance
 
     def advance_week(self) -> dict:
         issues = self.check_flight_plan()

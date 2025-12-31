@@ -44,7 +44,7 @@
             </div>
             <div class="flex justify-between text-sm">
                 <span class="text-gray-500">Wartungskosten:</span>
-                <span class="text-gray-700">€{{ "{:,.2f}".format(manager.calculate_maintenance()) }}</span>
+                <span class="text-red-700">€{{ "{:,.2f}".format(manager.calculate_weekly_maintenance())}}</span>
             </div>
         </div>
     </div>

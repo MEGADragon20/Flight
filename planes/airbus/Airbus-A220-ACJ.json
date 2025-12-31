@@ -15,5 +15,6 @@
             "first": 10
         }
     ],
-    "maintenance": 900
+    "maintenance": 900,
+    "pilots": 2
 }

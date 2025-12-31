@@ -40,7 +40,7 @@ def create_app():
 
         # Berechne erwarteten Gewinn
         expected_profit = sum(f.calculate_profit() for f in manager.flights)
-        expected_profit -= manager.calculate_maintenance()
+        expected_profit -= manager.calculate_weekly_maintenance()
         
         issues = manager.check_flight_plan()
 
@@ -102,7 +102,7 @@ def create_app():
 
     @app.route('/calendar')
     @app.route('/calendar/<day>')
-    @app.route('/calendar/<error>')
+    #@app.route('/calendar/<error>')
     def calendar(day='M', error = None):
         manager = get_manager()
         

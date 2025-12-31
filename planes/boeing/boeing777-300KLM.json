@@ -6,15 +6,20 @@
     "price": 30000000,
     "seat_configs": [
         {
-            "name": "V1",
+            "name": "Standard",
+            "economy": 390,
+            "premium": 0,
             "business": 35,
-            "economy": 390
+            "first": 0
         },
         {
             "name": "V2",
+            "economy": 374,
+            "premium": 0,
             "business": 34,
-            "economy": 374
+            "first": 0
         }
     ],
-    "maintenance": 2000
+    "maintenance": 2000,
+    "pilots": 2
 }

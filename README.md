@@ -40,7 +40,7 @@ then simply run `python3 start.py` and visit the game on <localhost:5000>!
  - [x] hour-depending demand -> when are people willing to come to the airport
  - [x] UTC, cities have timezones(constant)
  - [x] Flights are filled depending on demand
- - [ ] Flight rentablility (aprox 80% of pax)
+ - [x] Flight rentablility (aprox 80% of pax) (needs to be tested)
  - [ ] Display pax transported in route
 
 #### Lounges & Terminals

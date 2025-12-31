@@ -4,5 +4,6 @@
     "range": 1500,
     "velocity": 7,
     "price": 50000,
-    "maintenance": 300
+    "maintenance": 300,
+    "pilots": 2
 }
