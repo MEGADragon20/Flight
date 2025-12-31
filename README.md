@@ -46,7 +46,14 @@ then simply run `python3 start.py` and visit the game on <localhost:5000>!
 #### Lounges & Terminals
  - [x] City interface
  - [ ] Reform city class // add Hub class
+ - [ ] Costs for presence in Airports
  - [ ] Add Lounges to profitability
+ - [ ] Make Cities Tab searchable
+
+#### Gameplay
+ - [ ] "Next week" -> improve; make it less a "restart"
+ - [ ] Adapt Prices to make it more realistic
+ - [ ] Play it until week 20
 
 #### Player & Tutorial
  - [ ] Starting Plane, Hubs, Money etc, select name of Enterprise
