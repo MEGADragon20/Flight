@@ -107,6 +107,74 @@ class City:
 
         return EARTH_RADIUS_KM * c
 
+class Hub:
+    LEVEL = {
+        1: {
+            "name": "Permission",
+            "weekly_cost": 50,
+        },
+        2: {
+            "name": "Access",
+            "weekly_cost": 100,
+        },
+        3: {
+            "name": "Outpost",
+            "weekly_cost": 200,
+        },
+        4: {
+            "name": "Link",
+            "weekly_cost": 500,
+        },
+        5: {
+            "name": "Base",
+            "weekly_cost": 1000,
+        },
+        6: {
+            "name": "Hublet",
+            "weekly_cost": 2000,
+        },
+        7: {
+            "name": "Gateway",
+            "weekly_cost": 5000,
+        },
+        8: {
+            "name": "Anchor",
+            "weekly_cost": 10000,
+        },
+        9: {
+            "name": "Hub",
+            "weekly_cost": 20000    
+        },
+        10: {
+            "name": "Main Hub",
+            "weekly_cost": 50000
+        }
+    }
+    def __init__(self, city: City, level: int = 1):
+        self.city = city
+        self.level = level
+        self.passenger_bonus = 1 + round(0.025*level**2, 1)
+        self.name = Hub.LEVEL[level]["name"]
+        self.weekly_cost = Hub.LEVEL[level]["weekly_cost"]
+
+    def upgrade(self):
+        self.level += 1
+        self.passenger_bonus += 0.1
+
+    @classmethod
+    def from_dict(cls, data: dict):
+        cities = get_cities()
+        city_short = data['city']
+        city = next((c for c in cities if c.short == city_short), None)
+
+        return cls(city, int(data['level']))
+
+    def to_dict(self):
+        return {
+            'city': self.city.short,
+            'level': self.level
+        }
+
 
 class PlaneModel:
     def __init__(self, name: str, capacity: int, range: int, velocity: int, price: int, maintenance: int, pilots: int):
@@ -246,6 +314,7 @@ class AirlineManager:
         self.cities: List[City] = []
         self.planes: List[Plane] = []
         self.flights: List[Flight] = []
+        self.hubs: List[Hub] = []
         self.demand: dict[str, dict[str, int]] = {}
         self.money: float = 50000.0
         self.week: int = 1
@@ -260,13 +329,16 @@ class AirlineManager:
 
         starter_plane = Plane(self.available_models[0], f"Starter")
         starter_plane.current_city = self.cities[0]
+        
         self.planes.append(starter_plane)
         self.plane_counter += 1
-    
+        self.hubs = [Hub(starter_plane.current_city)] + [Hub(city) for city in self.cities[1:11]]
+
     def to_dict(self):
         return {
             'planes': [p.to_dict() for p in self.planes],
             'flights': [f.to_dict() for f in self.flights],
+            'hubs': [h.to_dict() for h in self.hubs],
             'money': self.money,
             'week': self.week,
         }
@@ -277,9 +349,9 @@ class AirlineManager:
         manager.cities = get_cities()
         manager.available_models = get_models()
         manager.planes = [Plane.from_dict(p) for p in data['planes']]
-        manager.flights = [Flight.from_dict(f, manager.planes) 
-                          for f in data['flights']]
-        
+        manager.flights = [Flight.from_dict(f, manager.planes) for f in data['flights']]
+        manager.hubs = [Hub.from_dict(h) for h in data['hubs']]
+
         for plane in manager.planes:
             plane.flights = [f for f in manager.flights if f.plane.registration == plane.registration]
         
@@ -306,6 +378,12 @@ class AirlineManager:
         for model in self.available_models:
             if model.name.lower() == name.lower():
                 return model
+        return None
+    
+    def get_hub_in_city(self, city: City) -> Optional[Hub]:
+        for hub in self.hubs:
+            if hub.city == city:
+                return hub
         return None
 
     def buy_plane(self, model_name: str, registration: str, city: City) -> Plane:
