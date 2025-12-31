@@ -59,6 +59,11 @@
             </button>
         </form>
     </div>
+    {% if error %}
+    <div class="bg-red-100 text-red-700 p-4 rounded-lg mb-6">
+        <strong>Fehler:</strong> {{ error }}
+    </div>
+    {% endif %}
 </div>
 
 <!-- Flugplan-Übersicht -->

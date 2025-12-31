@@ -2,19 +2,23 @@ import os, redis
 from flask import Flask, render_template, session, redirect, url_for, request, app
 from main import AirlineManager, Instant, get_potential_passenger_demand, get_route_demand
 from flask_session import Session
+from dotenv import load_dotenv
+
+load_dotenv()
 
 USE_REDIS = os.getenv("USE_REDIS")
 REDIS_URL = os.getenv("REDIS_URL")
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 def create_app():
+    print(repr(USE_REDIS))
     app = Flask(__name__)
+    app.secret_key = SECRET_KEY
     app.config['SESSION_TYPE'] = 'redis' if USE_REDIS == '1' else 'filesystem'
     app.config['SESSION_USE_SIGNER'] = True
     app.config['SESSION_REDIS'] = redis.from_url(REDIS_URL) if USE_REDIS == '1' else None
     app.config['SESSION_PERMANENT'] = False
     Session(app)
-    app.secret_key = SECRET_KEY
 
     def get_manager():
         """Holt oder erstellt Manager aus Session"""
@@ -98,7 +102,8 @@ def create_app():
 
     @app.route('/calendar')
     @app.route('/calendar/<day>')
-    def calendar(day='M'):
+    @app.route('/calendar/<error>')
+    def calendar(day='M', error = None):
         manager = get_manager()
         
         # Gruppiere Flüge nach Tag
@@ -113,6 +118,8 @@ def create_app():
             flights_by_day[day_code].sort(key=lambda f: f.start.to_minutes())
         day_flights = flights_by_day[day]
         day_profit = sum(f.calculate_profit() for f in day_flights)
+        if error:
+            return render_template("calendar.html", manager=manager, current_day=day, flights_by_day=flights_by_day, day_profit=day_profit, days=Instant.DAYS, error= error)
         return render_template("calendar.html", manager=manager, current_day=day, flights_by_day=flights_by_day, day_profit=day_profit, days=Instant.DAYS)
 
     @app.route('/calendar/add', methods=['POST'])
@@ -133,6 +140,7 @@ def create_app():
             
             return redirect(url_for('calendar', day=day))
         except Exception as e:
+            print(e)
             return redirect(url_for('calendar', error=str(e)))
 
     @app.route('/calendar/delete', methods=['POST'])

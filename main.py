@@ -169,8 +169,9 @@ class Plane:
 
 
 class Flight:
-    PRICE_PER_KM = 0.15
-    COST_PER_KM = 0.08
+    TICKETPRICE_PER_PAX = 0.15
+    FUELCOST_PER_KM = 0.08
+    PILOT_SALARY = 1000 # make this dependent of flight duration
     
     def __init__(self, origin: City, destination: City, plane: Plane, start: Instant, passengers: int):
         self.origin = origin
@@ -201,13 +202,16 @@ class Flight:
         return cls(origin, dest, plane, start, data['passengers'])
     
     def calculate_revenue(self) -> float:
-        return self.passengers * self.distance * self.PRICE_PER_KM
-    
-    def calculate_cost(self) -> float:
-        return self.distance * self.COST_PER_KM
-    
+        return self.passengers * self.TICKETPRICE_PER_PAX
+
+    def calculate_variable_cost(self) -> float:
+        return self.distance * self.FUELCOST_PER_KM
+
+    def calculate_fixed_cost(self) -> float:
+        return self.plane.maintenance + self.plane.pilots*PILOT_SALARY
+
     def calculate_profit(self) -> float:
-        return self.calculate_revenue() - self.calculate_cost()
+        return self.calculate_revenue() - self.calculate_variable_cost() - self.calculate_fixed_cost()
 
 
 # ==================== GAME MANAGER ====================
