@@ -339,9 +339,11 @@ class AirlineManager:
             raise ValueError(f"Flugzeug kann diese Distanz nicht fliegen")
         
         pot_passengers = get_potential_passenger_demand(get_route_demand(origin, destination, self.week), start.hour, start.minute, origin.timezone)
-        currently_flewn_passengers = self.check_route_usage(origin.short, destination.short, start)
-        available_demand = round((pot_passengers - currently_flewn_passengers) * 0.8) # 80% because always someone flys
-        passengers = min(max_passengers, available_demand)
+        currently_flewn_passengers_in_time = self.check_route_usage(origin.short, destination.short, start)
+        currently_flewn_passengers = self.check_route_usage(origin.short, destination.short, None)
+        available_demand = round((pot_passengers - currently_flewn_passengers_in_time) * 0.8) # 80% because always someone flys
+        weekly_max = round(get_route_demand(origin, destination, self.week) - currently_flewn_passengers)
+        passengers = min(max_passengers, available_demand, weekly_max)
 
         flight = Flight(origin, destination, plane, start, passengers)
         self.flights.append(flight)
