@@ -1,6 +1,6 @@
 import os, redis
 from flask import Flask, render_template, session, redirect, url_for, request, app
-from main import AirlineManager, Instant, get_potential_passenger_demand, get_route_demand
+from main import AirlineManager, Instant, Hub, get_potential_passenger_demand, get_route_demand
 from flask_session import Session
 from dotenv import load_dotenv
 
@@ -88,15 +88,17 @@ def create_app():
             return render_template("cities.html", manager=manager, error="Stadt nicht gefunden.")
         return render_template("view_city.html", manager=manager, city=city)
 
-    @app.route('/upgrade_hub/<city_name>', methods=['POST'])
-    def upgrade_hub(city_name):
+    @app.route('/upgrade_hub/<city_short>', methods=['POST'])
+    def upgrade_hub(city_short):
         manager = get_manager()
-        hub = manager.get_hub_in_city(manager.find_city(city_name))
+        hub = manager.get_hub_in_city(manager.find_city(city_short))
         if not hub:
-            return render_template("cities.html", manager=manager, error="Hub nicht gefunden.")
+            manager.hubs.append(Hub(manager.find_city(city_short)))
+            save_manager(manager)
+            return redirect(url_for('view_city', city_name=city_short))
         hub.upgrade()
         save_manager(manager)
-        return redirect(url_for('view_city', city_name=city_name))
+        return redirect(url_for('view_city', city_name=city_short))
 
     @app.route('/routes/<origin>/<destination>')
     def view_route(origin, destination):
