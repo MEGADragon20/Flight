@@ -494,6 +494,12 @@ class AirlineManager:
         for plane in self.planes:
             total_weekly_maintenance += plane.maintenance
         return total_weekly_maintenance
+    
+    def calculate_weekly_hub_cost(self) -> float:
+        hub_weekly_cost = 0
+        for hub in self.hubs:
+            hub_weekly_cost += hub.weekly_cost
+        return hub_weekly_cost
 
     def advance_week(self) -> dict:
         issues = self.check_flight_plan()
@@ -510,9 +516,8 @@ class AirlineManager:
             flight.plane.current_city = flight.destination
 
         maintenance = self.calculate_weekly_maintenance()
-        hub_weekly_cost = 0
-        for hub in self.hubs:
-            hub_weekly_cost += hub.weekly_cost
+        hub_weekly_cost = self.calculate_weekly_hub_cost()
+        
 
         total_cost += maintenance
         total_cost += hub_weekly_cost
