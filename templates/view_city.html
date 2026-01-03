@@ -25,10 +25,29 @@
         </div>
 
         <div class="p-4 bg-gray-50 rounded-lg">
-            <div class="text-sm text-gray-500">Zukünftige Features</div>
-            <div class="text-lg font-semibold">
-                Lounges • Hub-Status • Terminal-Ausbau
-            </div>
+            {% if hub%}
+                <div class="text-sm text-gray-500">
+                    {{ hub.name }} <span class="text-gray-600">(Level: {{ hub.level}})</span>
+                </div>
+                <div class="text-lg font-semibold">
+                    {{ hub.passenger_bonus*100 }}% Passagiernachfrage <br>
+                    {{ hub.weekly_cost }} € pro Woche
+                </div>
+                <form method="POST" action="{{ url_for('upgrade_hub', city_short = city.short) }}">
+                    <button type="submit" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition">
+                        Upgrade Hub
+                    </button>
+                </form>
+            {% else %}
+                <div class="text-sm text-gray-500">
+                    No Presence
+                </div>
+                <form method="POST" action="{{ url_for('upgrade_hub', city_short = city.short) }}">
+                    <button type="submit" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition">
+                        Build Hub
+                    </button>
+                </form>
+            {% endif %}
         </div>
     </div>
 </div>

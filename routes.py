@@ -84,9 +84,10 @@ def create_app():
     def view_city(city_name):
         manager = get_manager()
         city = manager.find_city(city_name)
+        hub = manager.get_hub_in_city(city)
         if not city:
             return render_template("cities.html", manager=manager, error="Stadt nicht gefunden.")
-        return render_template("view_city.html", manager=manager, city=city)
+        return render_template("view_city.html", manager=manager, city=city, hub=hub)
 
     @app.route('/upgrade_hub/<city_short>', methods=['POST'])
     def upgrade_hub(city_short):

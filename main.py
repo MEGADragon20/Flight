@@ -506,10 +506,16 @@ class AirlineManager:
         
         for flight in self.flights:
             total_revenue += flight.calculate_revenue()
-            total_cost += flight.calculate_cost()
+            total_cost += flight.calculate_fixed_cost() + flight.calculate_variable_cost()
             flight.plane.current_city = flight.destination
-        maintenance = self.calculate_maintenance()
+
+        maintenance = self.calculate_weekly_maintenance()
+        hub_weekly_cost = 0
+        for hub in self.hubs:
+            hub_weekly_cost += hub.weekly_cost
+
         total_cost += maintenance
+        total_cost += hub_weekly_cost
         total_profit = total_revenue - total_cost
         
         self.money += total_profit
