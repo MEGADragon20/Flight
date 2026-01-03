@@ -183,6 +183,16 @@ def create_app():
     def reset():
         session.clear()
         return redirect(url_for('index'))
+    
+    @app.route('/favicon.ico')
+    def favicon():
+        print("Favicon requested")
+        return redirect(url_for('static', filename='favicon.png'))
+    
+    @app.route("/static/<path:filename>")
+    def static_files(filename):
+        print("Serving static file:", filename)
+        return app.send_static_file(filename)
 
     return app
 
