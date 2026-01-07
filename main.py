@@ -415,16 +415,16 @@ class AirlineManager:
             raise ValueError(f"Zu viele Passagiere! Max: {plane.capacity}")
         if not plane.can_fly(distance):
             raise ValueError(f"Flugzeug kann diese Distanz nicht fliegen")
-        if not plane.current_city or plane.current_city != origin:
-            raise ValueError(f"Flugzeug ist nicht in der Abflugstadt")
         if self.get_hub_in_city(origin) is None:
             raise ValueError(f"Kein Hub in der Abflugstadt")
         if self.get_hub_in_city(destination) is None:
             raise ValueError(f"Kein Hub in der Ankunftsstadt")
         
         origin_hub = self.get_hub_in_city(origin)
-        # Problem with boost due to no recalculation of older flights before building hub also make function for recalculating all flights when a week passes
         
+        # Problem with boost due to no recalculation of older flights before building hub also make function for recalculating all flights when a week passes
+        # also some problem with the "there will always be someone flying" part when there are too many flights on the route
+
         pot_passengers = get_potential_passenger_demand(get_route_demand(origin, destination, self.week), start.hour, start.minute, origin.timezone)* origin_hub.passenger_bonus
         currently_flewn_passengers_in_time = self.check_route_usage(origin.short, destination.short, start)
         currently_flewn_passengers = self.check_route_usage(origin.short, destination.short, None)
@@ -432,10 +432,9 @@ class AirlineManager:
         weekly_max = round(get_route_demand(origin, destination, self.week) - currently_flewn_passengers)
         passengers = min(max_passengers, available_demand, weekly_max)
 
-        boosted_passengers = round(passengers * origin_hub.passenger_bonus)
 
 
-        flight = Flight(origin, destination, plane, start, boosted_passengers)
+        flight = Flight(origin, destination, plane, start, passengers)
         self.flights.append(flight)
         plane.flights.append(flight)
         
