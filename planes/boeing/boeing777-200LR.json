@@ -2,7 +2,7 @@
     "name": "Boeing 777-200LR",
     "capacity": 301,
     "range": 15840,
-    "velocity": 17,
+    "velocity": 15.75,
     "price": 320000000,
     "maintenance": 3000,
     "pilots": 4,
@@ -33,6 +33,13 @@
             "economy": 234,
             "premium": 0,
             "business": 42,
+            "first": 0
+        },
+        {
+            "name": "Air Canada", 
+            "economy": 236,
+            "premium": 24,
+            "business": 40,
             "first": 0
         }
     ]
