@@ -188,6 +188,27 @@ def create_app():
         session.clear()
         return redirect(url_for('index'))
     
+    # wiki!
+
+    @app.route('/wiki')
+    @app.route('/wiki/<article>')
+    def wiki(article=None):
+        manager = get_manager()
+        if article:
+            try:
+                return render_template(f"wiki/{article}.html")
+            except:
+                return render_template("wiki/main.html", manager=manager, error="Seite nicht gefunden.")
+        return render_template("wiki/main.html", manager=manager)
+
+    @app.route('/wiki/plane/<planename>')
+    def wiki_plane(planename):
+        try:
+            return render_template(f"wiki/planes/{planename}.html")
+        except:
+            return render_template("wiki/main.html", error="Seite nicht gefunden.")
+    # some important routes for static files and browsers and stuff
+    
     @app.route('/favicon.ico')
     def favicon():
         print("Favicon requested")
