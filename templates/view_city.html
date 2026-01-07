@@ -11,34 +11,43 @@
         </span>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-        <div class="p-4 bg-gray-50 rounded-lg">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+        <div class="p-4 bg-gray-50 rounded-lg md:col-span-2">
             <div class="text-sm text-gray-500">Bevölkerung</div>
             <div class="text-2xl font-bold">
                 {{ "{:,}".format(city.population) if city.population else "—" }}
             </div>
-        </div>
-
-        <div class="p-4 bg-gray-50 rounded-lg">
             <div class="text-sm text-gray-500">Position</div>
             <div class="text-2xl font-bold">{{ city.x }}|{{ city.y }}</div>
         </div>
-
-        <div class="p-4 bg-gray-50 rounded-lg">
-            {% if hub%}
-                <div class="text-sm text-gray-500">
-                    {{ hub.name }} <span class="text-gray-600">(Level: {{ hub.level}})</span>
+        {% if hub %}
+            <div class="p-4 bg-gray-50 rounded-lg md:col-span-1 content-center text-center">
+                <div class="text-base font-semibold">
+                    {{ hub.name }} <span class="text-sm text-500">(Level: {{ hub.level}})</span>
                 </div>
-                <div class="text-lg font-semibold">
-                    {{ hub.passenger_bonus*100 }}% Passagiernachfrage <br>
-                    {{ hub.weekly_cost }} € pro Woche
-                </div>
+                <br>
                 <form method="POST" action="{{ url_for('upgrade_hub', city_short = city.short) }}">
                     <button type="submit" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition">
                         Upgrade Hub
                     </button>
                 </form>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-lg md:col-span-1">
+                <div class="text-sm text-gray-500">
+                    Passagiernachfrage
+                </div>
+                <div class="text-lg font-semibold">
+                    {{ hub.passenger_bonus*100 }}%
+                </div>
+                <div class="text-sm text-gray-500">
+                    Wöchentliche Kosten
+                </div>
+                <div class="text-lg font-semibold">
+                    {{ hub.weekly_cost }} €
+                </div>
+            </div>
             {% else %}
+            <div class="p-4 bg-gray-50 rounded-lg md:col-span-2">
                 <div class="text-sm text-gray-500">
                     No Presence
                 </div>
@@ -47,9 +56,9 @@
                         Build Hub
                     </button>
                 </form>
+            </div>
             {% endif %}
         </div>
-    </div>
 </div>
 
 <!-- Demand Panels -->
