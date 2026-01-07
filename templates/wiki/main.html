@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h1 class="text-3xl font-bold mb-4">📖 Airline Manager Wiki</h1>
+    <p class="text-gray-600 mb-4">
+        Willkommen im inoffiziell-offiziellen Nachschlagewerk für alles,
+        was in deinem Airline-Imperium passiert. Dieser Ort sammelt Halbwissen,
+        überambitionierte Theorie und gelegentlich sogar nützliche Informationen.
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+        <div class="p-4 bg-gray-50 rounded-lg border card-hover">
+            <h2 class="text-lg font-bold mb-2">📊 Spielmechaniken</h2>
+            <p class="text-gray-600 text-sm mb-2">
+                Übersicht über Wirtschaft, Einnahmen, Wartungskosten und andere Dinge,
+                die man ignoriert, bis es finanziell brennt.
+            </p>
+            <a href="{{ url_for('wiki', article='mechanics') }}" class="text-blue-600 font-semibold">
+                Zum Artikel →
+            </a>
+        </div>
+
+        <div class="p-4 bg-gray-50 rounded-lg border card-hover">
+            <h2 class="text-lg font-bold mb-2">✈️ Flugzeuge</h2>
+            <p class="text-gray-600 text-sm mb-2">
+                Modelle, Kapazitäten und Legenden von Maschinen,
+                die viel zu teuer waren, aber glänzen.
+            </p>
+            <a href="{{ url_for('wiki_plane', planename='overview') }}" class="text-blue-600 font-semibold">
+                Flugzeugübersicht →
+            </a>
+        </div>
+
+        <div class="p-4 bg-gray-50 rounded-lg border card-hover">
+            <h2 class="text-lg font-bold mb-2">🌍 Städte & Routen</h2>
+            <p class="text-gray-600 text-sm mb-2">
+                Hub-Strategien, profitables Routing und
+                die ewige Frage: Warum fliegt hier niemand hin?
+            </p>
+            <a href="{{ url_for('wiki', article='routes') }}" class="text-blue-600 font-semibold">
+                Mehr erfahren →
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Fake "Featured Articles" section -->
+<div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-2xl font-bold mb-4">⭐ Empfohlene Einträge</h2>
+
+    <div class="space-y-4">
+        <div class="p-4 bg-gray-50 rounded-lg border">
+            <h3 class="text-lg font-bold">
+                <a href="{{ url_for('wiki', article='economy-basics') }}" class="text-blue-600">
+                    Grundlagen der Spielökonomie
+                </a>
+            </h3>
+            <p class="text-gray-600 text-sm">
+                Eine tiefgreifende und völlig überernste Analyse darüber,
+                wie man nicht direkt pleite geht.
+            </p>
+        </div>
+
+        <div class="p-4 bg-gray-50 rounded-lg border">
+            <h3 class="text-lg font-bold">
+                <a href="{{ url_for('wiki_plane', planename='starter-fleet') }}" class="text-blue-600">
+                    Einsteigerflotte: Was lohnt sich?
+                </a>
+            </h3>
+            <p class="text-gray-600 text-sm">
+                Subjektive Empfehlungen, statistische Halbwahrheiten
+                und vermutlich der falsche Flieger.
+            </p>
+        </div>
+
+        <div class="p-4 bg-gray-50 rounded-lg border">
+            <h3 class="text-lg font-bold">
+                <a href="{{ url_for('wiki', article='flight-planning') }}" class="text-blue-600">
+                    Flugplanung & Zeitmanagement
+                </a>
+            </h3>
+            <p class="text-gray-600 text-sm">
+                Wie man Slots nutzt, Leerlauf vermeidet
+                und trotzdem vergisst, einen Flug einzutragen.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Decoy "Wiki Stats" -->
+<div class="bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-2xl font-bold mb-4">📚 Wiki Überblick</h2>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+        <div class="p-4 bg-gray-50 rounded-lg border">
+            <div class="text-3xl font-bold">14</div>
+            <div class="text-sm text-gray-600">Artikel</div>
+        </div>
+
+        <div class="p-4 bg-gray-50 rounded-lg border">
+            <div class="text-3xl font-bold">6</div>
+            <div class="text-sm text-gray-600">Flugzeugseiten</div>
+        </div>
+
+        <div class="p-4 bg-gray-50 rounded-lg border">
+            <div class="text-3xl font-bold">9</div>
+            <div class="text-sm text-gray-600">Gameplay-Themen</div>
+        </div>
+
+        <div class="p-4 bg-gray-50 rounded-lg border">
+            <div class="text-3xl font-bold">∞</div>
+            <div class="text-sm text-gray-600">offene Fragen</div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
