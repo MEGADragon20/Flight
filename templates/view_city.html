@@ -47,10 +47,11 @@
                 </div>
             </div>
             {% else %}
-            <div class="p-4 bg-gray-50 rounded-lg md:col-span-2">
+            <div class="p-4 bg-gray-50 rounded-lg md:col-span-2 content-center text-center">
                 <div class="text-sm text-gray-500">
                     No Presence
                 </div>
+                <br>
                 <form method="POST" action="{{ url_for('upgrade_hub', city_short = city.short) }}">
                     <button type="submit" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition">
                         Build Hub

@@ -41,17 +41,19 @@ then simply run `python3 start.py` and visit the game on <localhost:5000>!
  - [x] UTC, cities have timezones(constant)
  - [x] Flights are filled depending on demand
  - [x] Flight rentablility (aprox 80% of pax) (needs to be tested)
- - [ ] Display pax transported in route
+ - [ ] Display pax transported in route 
+ - [ ] Balance // improve after hubs
 
 #### Lounges & Terminals
  - [x] City interface
- - [ ] Reform city class // add Hub class
- - [ ] Costs for presence in Airports
- - [ ] Add Lounges to profitability
+ - [x] Reform city class // add Hub class
+ - [x] Costs for presence in Airports
+ - [x] Add Lounges to potential demand
  - [ ] Make Cities Tab searchable
 
 #### Gameplay
- - [ ] "Next week" -> improve; make it less a "restart"
+ - [x] "Next week" -> no reset
+ - [ ] "Next week" -> recalculate flights
  - [ ] Adapt Prices to make it more realistic
  - [ ] Play it until week 20
 

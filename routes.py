@@ -79,7 +79,8 @@ def create_app():
     @app.route('/cities')
     def cities():
         manager = get_manager()
-        return render_template("cities.html", manager=manager)
+        cities_with_hubs = [hub.city.short for hub in manager.hubs]
+        return render_template("cities.html", manager=manager, cities_with_hubs=cities_with_hubs)
 
     @app.route('/cities/view/<city_name>')
     def view_city(city_name):
@@ -116,7 +117,7 @@ def create_app():
 
     @app.route('/calendar')
     @app.route('/calendar/<day>')
-    #@app.route('/calendar/<error>')
+    #@app.route('/calendar/<day>/<error>')
     def calendar(day='M', error = None):
         manager = get_manager()
         
@@ -132,9 +133,12 @@ def create_app():
             flights_by_day[day_code].sort(key=lambda f: f.start.to_minutes())
         day_flights = flights_by_day[day]
         day_profit = sum(f.calculate_profit() for f in day_flights)
+
+        cities_with_hubs = [hub.city.short for hub in manager.hubs]
+
         if error:
-            return render_template("calendar.html", manager=manager, current_day=day, flights_by_day=flights_by_day, day_profit=day_profit, days=Instant.DAYS, error= error)
-        return render_template("calendar.html", manager=manager, current_day=day, flights_by_day=flights_by_day, day_profit=day_profit, days=Instant.DAYS)
+            return render_template("calendar.html", manager=manager, current_day=day, flights_by_day=flights_by_day, day_profit=day_profit, days=Instant.DAYS, cities_with_hubs=cities_with_hubs, error=error)
+        return render_template("calendar.html", manager=manager, current_day=day, flights_by_day=flights_by_day, day_profit=day_profit, days=Instant.DAYS, cities_with_hubs=cities_with_hubs)
 
     @app.route('/calendar/add', methods=['POST'])
     def add_flight():
@@ -183,6 +187,27 @@ def create_app():
     def reset():
         session.clear()
         return redirect(url_for('index'))
+    
+    # wiki!
+
+    @app.route('/wiki')
+    @app.route('/wiki/<article>')
+    def wiki(article=None):
+        manager = get_manager()
+        if article:
+            try:
+                return render_template(f"wiki/{article}.html")
+            except:
+                return render_template("wiki/main.html", manager=manager, error="Seite nicht gefunden.")
+        return render_template("wiki/main.html", manager=manager)
+
+    @app.route('/wiki/plane/<planename>')
+    def wiki_plane(planename):
+        try:
+            return render_template(f"wiki/planes/{planename}.html")
+        except:
+            return render_template("wiki/main.html", error="Seite nicht gefunden.")
+    # some important routes for static files and browsers and stuff
     
     @app.route('/favicon.ico')
     def favicon():
