@@ -54,7 +54,6 @@ then simply run `python3 start.py` and visit the game on <localhost:5000>!
 #### Gameplay
  - [x] "Next week" -> no reset
  - [ ] "Next week" -> recalculate flights
- - [ ] Adapt Prices to make it more realistic
  - [ ] Play it until week 20
 
 #### Player & Tutorial
@@ -63,3 +62,14 @@ then simply run `python3 start.py` and visit the game on <localhost:5000>!
  - [ ] create accounts, email, username etc
  - [ ] Save data for multiple users. 
  - [ ] **P**v**P** (?)
+
+#### Balances
+ - [ ] Max_passengers always max
+ - [ ] "Guess the price" & "perfect-price"
+ - [ ] Adapt Prices to make it more realistic (plane costs etc)
+ - [ ] Maintenance time depending on flight lenght, passenger count
+
+####  Crew
+ - [x] pilots needed
+ - [ ] crew needed
+ - [ ] floor personel

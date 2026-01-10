@@ -194,9 +194,10 @@ def create_app():
     @app.route('/wiki/<article>')
     def wiki(article=None):
         manager = get_manager()
+        print("Wiki article requested:", article)
         if article:
             try:
-                return render_template(f"wiki/{article}.html")
+                return render_template(f"wiki/{article}.html", manager=manager)
             except:
                 return render_template("wiki/main.html", manager=manager, error="Seite nicht gefunden.")
         return render_template("wiki/main.html", manager=manager)
