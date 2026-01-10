@@ -49,7 +49,7 @@ then simply run `python3 start.py` and visit the game on <localhost:5000>!
  - [x] Reform city class // add Hub class
  - [x] Costs for presence in Airports
  - [x] Add Lounges to potential demand
- - [ ] Make Cities Tab searchable
+ - [x] Make Cities Tab searchable
 
 #### Gameplay
  - [x] "Next week" -> no reset

@@ -3,28 +3,32 @@
 <div class="bg-white rounded-lg shadow-md p-6">
     <h1 class="text-3xl font-bold mb-6">🌍 Städte-Übersicht</h1>
     
+    <div class="mb-6">
+    <input type="text" id="citySearch" placeholder="🔍 Stadt suchen..." class="w-full md:w-1/2 px-4 py-2 border rounded-lg focus:outline-none focus:ring">
+    </div>
+
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {% for city in manager.cities %}
-        <a href="{{ url_for('view_city', city_name=city.name) }}">
-        {% if city.short in cities_with_hubs %}  
-        <div class="border rounded-lg p-4 hover:shadow-lg transition card-hover border-green-400 bg-green-50">
-        {% else %}
-        <div class="border rounded-lg p-4 hover:shadow-lg transition card-hover">
-        {% endif %}
-            <div class="flex items-center justify-between mb-2">
-                <h3 class="text-xl font-bold">{{ city.short }}</h3>
-                {% set snippets = [
-                    '<span class="text-2xl">🌆</span>',
-                    '<span class="text-2xl">🏙️</span>',
-                    '<span class="text-2xl">🌇</span>',
-                    '<span class="text-2xl">🌉</span>',
-                    '<span class="text-2xl">🏞️</span>',
-                    '<span class="text-2xl">🌃</span>',
-                    '<span class="text-2xl">🌆</span>'
-                ] %}
+            <a href="{{ url_for('view_city', city_name=city.name) }}" class="city-card" data-name="{{ city.name|lower }} {{ city.short|lower }}">
+                {% if city.short in cities_with_hubs %}  
+                    <div class="border rounded-lg p-4 hover:shadow-lg transition card-hover border-green-400 bg-green-50">
+                {% else %}
+                    <div class="border rounded-lg p-4 hover:shadow-lg transition card-hover">
+                {% endif %}
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-xl font-bold">{{ city.short }}</h3>
+                    {% set snippets = [
+                        '<span class="text-2xl">🌆</span>',
+                        '<span class="text-2xl">🏙️</span>',
+                        '<span class="text-2xl">🌇</span>',
+                        '<span class="text-2xl">🌉</span>',
+                        '<span class="text-2xl">🏞️</span>',
+                        '<span class="text-2xl">🌃</span>',
+                        '<span class="text-2xl">🌆</span>'
+                    ] %}
 
-                {{ snippets | random | safe }}
-            </div>
+                    {{ snippets | random | safe }}
+                     </div>
             <p class="text-lg font-semibold text-gray-700 mb-2">{{ city.name }}</p>
             <div class="text-sm text-gray-600">
                 <p>👥 {{ "{:,}".format(city.population) }} Einwohner</p>
@@ -41,6 +45,17 @@
     </div>
 </div>
 <script>
-    // Add your JavaScript here
+    const searchInput = document.getElementById("citySearch");
+    const cityCards = document.querySelectorAll(".city-card");
+
+    searchInput.addEventListener("input", function () {
+        const query = this.value.toLowerCase();
+
+        cityCards.forEach(card => {
+            const name = card.dataset.name;
+            card.style.display = name.includes(query) ? "" : "none";
+        });
+    });
 </script>
+
 {% endblock %}

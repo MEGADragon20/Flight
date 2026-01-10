@@ -5,36 +5,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Airline Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
         .card-hover:hover { transform: translateY(-2px); transition: all 0.3s; }
     </style>
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-50" :class="{ 'overflow-hidden': open }">
+
     <!-- Navigation -->
-    <nav class="gradient-bg text-white shadow-lg">
-        <div class="container mx-auto px-4">
-            <div class="flex items-center justify-between py-4">
-                <div class="flex items-center space-x-2">
-                    <span class="text-3xl">✈️</span>
-                    <span class="text-2xl font-bold">Airline Manager</span>
-                </div>
-                <div class="flex items-center space-x-6">
-                    <div class="text-right">
-                        <div class="text-sm opacity-90">Woche {{ manager.week }}</div>
-                        <div class="text-2xl font-bold">€{{ "{:,.2f}".format(manager.money) }}</div>
-                    </div>
-                </div>
+    <nav class="gradient-bg text-white shadow-lg" x-data="{ open: false }">
+    <div class="container mx-auto px-4">
+        <!-- Top bar -->
+        <div class="flex items-center justify-between py-4">
+            <div class="flex items-center space-x-2">
+                <span class="text-3xl">✈️</span>
+                <span class="text-xl sm:text-2xl font-bold">Airline Manager</span>
             </div>
-            <div class="flex space-x-1 pb-3">
-                <a href="{{ url_for('index') }}" class="px-4 py-2 rounded-t-lg hover:bg-white hover:bg-opacity-20 transition {% if request.endpoint == 'index' %}bg-white bg-opacity-20{% endif %}">📊 Dashboard</a>
-                <a href="{{ url_for('calendar') }}" class="px-4 py-2 rounded-t-lg hover:bg-white hover:bg-opacity-20 transition {% if 'calendar' in request.endpoint %}bg-white bg-opacity-20{% endif %}">📅 Flugplan</a>
-                <a href="{{ url_for('hangar') }}" class="px-4 py-2 rounded-t-lg hover:bg-white hover:bg-opacity-20 transition {% if request.endpoint == 'hangar' %}bg-white bg-opacity-20{% endif %}">✈️ Hangar ({{ manager.planes|length }})</a>
-                <a href="{{ url_for('shop') }}" class="px-4 py-2 rounded-t-lg hover:bg-white hover:bg-opacity-20 transition {% if request.endpoint == 'shop' %}bg-white bg-opacity-20{% endif %}">🛒 Shop</a>
-                <a href="{{ url_for('cities') }}" class="px-4 py-2 rounded-t-lg hover:bg-white hover:bg-opacity-20 transition {% if request.endpoint == 'cities' %}bg-white bg-opacity-20{% endif %}">🌍 Städte</a>
+
+            <!-- Desktop stats -->
+            <div class="hidden sm:block text-right">
+                <div class="text-sm opacity-90">Woche {{ manager.week }}</div>
+                <div class="text-xl font-bold">€{{ "{:,.2f}".format(manager.money) }}</div>
+            </div>
+
+            <!-- Hamburger / Close -->
+            <button
+                @click="open = !open"
+                class="sm:hidden focus:outline-none text-3xl z-50">
+                <span x-show="!open">☰</span>
+                <span x-show="open">✕</span>
+            </button>
+        </div>
+    </div>
+
+    {% set nav = [
+        ('index','📊 Dashboard'),
+        ('calendar','📅 Flugplan'),
+        ('hangar','✈️ Hangar (' ~ manager.planes|length ~ ')'),
+        ('shop','🛒 Shop'),
+        ('cities','🌍 Städte'),
+        ('wiki','📖 Wiki')
+    ] %}
+
+    <!-- FULLSCREEN MOBILE MENU -->
+    <div
+        x-show="open"
+        x-transition.opacity
+        class="sm:hidden fixed inset-0 gradient-bg z-40">
+
+        <div class="flex flex-col h-full pt-24 px-6 space-y-4">
+            {% for endpoint, label in nav %}
+                <a href="{{ url_for(endpoint) }}"
+                   @click="open = false"
+                   class="text-2xl font-semibold py-4 px-6 rounded-lg
+                          bg-white bg-opacity-10 hover:bg-opacity-20 transition">
+                    {{ label }}
+                </a>
+            {% endfor %}
+
+            <!-- Spacer -->
+            <div class="flex-grow"></div>
+
+            <!-- Mobile stats -->
+            <div class="text-center text-lg pb-8 opacity-90">
+                Woche {{ manager.week }}<br>
+                €{{ "{:,.2f}".format(manager.money) }}
             </div>
         </div>
-    </nav>
+    </div>
+
+    <!-- Desktop navigation -->
+    <div class="hidden sm:block container mx-auto px-4">
+        <div class="flex space-x-1 pb-3">
+            {% for endpoint, label in nav %}
+                <a href="{{ url_for(endpoint) }}"
+                   class="px-4 py-2 rounded-t-lg hover:bg-white hover:bg-opacity-20 transition
+                   {% if request.endpoint == endpoint or endpoint in request.endpoint %}bg-white bg-opacity-20{% endif %}">
+                    {{ label }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+</nav>
+
+
 
     <!-- Content -->
     <div class="container mx-auto px-4 py-8">
