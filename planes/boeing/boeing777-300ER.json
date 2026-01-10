@@ -1,0 +1,25 @@
+{
+    "name": "Boeing 777-300 ER",
+    "capacity": 400,
+    "range": 10000,
+    "velocity": 15.35,
+    "price": 30000000,
+    "seat_configs": [
+        {
+            "name": "Standard",
+            "economy": 390,
+            "premium": 0,
+            "business": 35,
+            "first": 0
+        },
+        {
+            "name": "V2",
+            "economy": 374,
+            "premium": 0,
+            "business": 34,
+            "first": 0
+        }
+    ],
+    "maintenance": 2000,
+    "pilots": 2
+}
