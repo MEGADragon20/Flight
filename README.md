@@ -53,7 +53,7 @@ then simply run `python3 start.py` and visit the game on <localhost:5000>!
 
 #### Gameplay
  - [x] "Next week" -> no reset
- - [ ] "Next week" -> recalculate flights
+ - [x] "Next week" -> recalculate flights
  - [ ] Play it until week 20
 
 #### Player & Tutorial
