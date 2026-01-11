@@ -75,6 +75,15 @@ def create_app():
         except ValueError as e:
             return render_template("shop.html", manager=manager, error=str(e))
 
+    @app.route('/hangar/sell/<registration>')
+    def sell_plane(registration):
+        manager = get_manager()
+        try:
+            manager.sell_plane(registration)
+            save_manager(manager)
+            return redirect(url_for('hangar'))
+        except ValueError as e:
+            return render_template("hangar.html", manager=manager, error=str(e))
 
     @app.route('/cities')
     def cities():
@@ -175,12 +184,14 @@ def create_app():
 
     @app.route('/advance_week', methods=['POST'])
     def advance_week():
+        print("Advancing week...")
         manager = get_manager()
         try:
             result = manager.advance_week()
             save_manager(manager)
             return render_template("week_result.html", result=result, manager=manager)
         except ValueError as e:
+            print("Error advancing week:", e)
             return redirect(url_for('index'))
 
     @app.route('/reset', methods=['POST'])

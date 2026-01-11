@@ -41,6 +41,7 @@
                     <p class="text-sm text-gray-600">Geplante Flüge:</p>
                     <p class="font-bold text-purple-600">{{ plane.flights|length }}</p>
                 </div>
+                <a href="{{ url_for('sell_plane', registration=plane.registration) }}" class="mt-4 inline-block bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">Flugzeug verkaufen</a>
             </div>
             {% endfor %}
         </div>

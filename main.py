@@ -237,6 +237,10 @@ class Plane:
     def can_fly(self, distance: float) -> bool:
         return distance <= self.range
 
+    def sell(self) -> float:
+        sell_price = self.model.price * 0.7
+        return sell_price
+
 
 class Flight:
     FUELCOST_PER_KM = 0.08
@@ -403,6 +407,20 @@ class AirlineManager:
         
         return plane
     
+    def sell_plane(self, registration: str) -> float:
+        plane = self.find_plane(registration)
+        if not plane:
+            raise ValueError(f"Flugzeug mit Registrierung '{registration}' nicht gefunden")
+        
+        if any(f for f in self.flights if f.plane == plane):
+            raise ValueError(f"Flugzeug '{registration}' hat noch geplante Flüge und kann nicht verkauft werden")
+        
+        sell_price = plane.sell()
+        self.money += sell_price
+        self.planes.remove(plane)
+        
+        return sell_price
+
     def create_flight(self, origin_name: str, dest_name: str, plane_reg: str, start: Instant, max_passengers: int) -> Flight:
         origin = self.find_city(origin_name)
         destination = self.find_city(dest_name)
@@ -511,8 +529,14 @@ class AirlineManager:
         for hub in self.hubs:
             hub_weekly_cost += hub.weekly_cost
         return hub_weekly_cost
+    
+    def recalculate_flights(self): #! TODO
+        for flight in self.flights:
+            self.create_flight(flight.origin.short, flight.destination.short, flight.plane.registration, flight.start, flight.passengers)
+            self.flights.remove(flight)
 
     def advance_week(self) -> dict:
+        print("Checkpint C")
         issues = self.check_flight_plan()
         if issues:
             raise ValueError("Flugplan ungültig!")
@@ -538,10 +562,18 @@ class AirlineManager:
         self.week += 1
         
         # Lösche Flüge
-        self.flights.clear()
+
         for plane in self.planes:
             plane.flights.clear()
-        
+
+        self.update_demand()
+        self.recalculate_flights()
+
+        for plane in self.planes:
+            if plane.flights:
+                plane.current_city = plane.flights[-1].destination
+
+
         return {
             'week': self.week - 1,
             'flights': flight_count,
