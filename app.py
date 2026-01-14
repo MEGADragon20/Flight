@@ -1,4 +1,4 @@
-from routes import create_app
+from assemble import create_app
 
 app = create_app()
 

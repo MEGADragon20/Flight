@@ -58,7 +58,7 @@ then simply run `python3 start.py` and visit the game on <localhost:5000>!
 
 #### Player & Tutorial
  - [ ] Starting Plane, Hubs, Money etc, select name of Enterprise
- - [ ] Tutorial or small Documentation `/wiki/get_started`
+ - [x] Tutorial or small Documentation `/wiki/get_started`
  - [ ] create accounts, email, username etc
  - [ ] Save data for multiple users. 
  - [ ] **P**v**P** (?)
@@ -73,3 +73,20 @@ then simply run `python3 start.py` and visit the game on <localhost:5000>!
  - [x] pilots needed
  - [ ] crew needed
  - [ ] floor personel
+
+ Okay so.
+I have an app that works with flask. 
+The game logic (classes etc) goes in main.py
+This is imported by routes.py, that returns an app in a function that is later picked up by an vercel entry point. 
+The thing is I want to change a bit how the game stores progress.
+Currently I use Flask-Session with Redis for vercel. This is working great tbh! There are just two issues.
+When I deploy the app locally (not vercel, usually for testing) every browser that accesses my page saves their information in a  session or smth like that. -> great!
+When I access my vercel page there is like one big account that is stored. 
+
+I would like to do the following if possible:
+1. Keep redis.
+2. Store the information locally and in vercel asociated with an account namae/id/email on redis, instead of browser depended
+3. Somehow import all routes from the current game into another .py file where I manage the account and make paths like this domain/<name>/game/dashboard etc
+
+if redis is not adequate for this I am willing to change to some other form of storing information that is compatible with vercel and is free (maybe supabase)
+ 

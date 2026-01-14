@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% set username = request.view_args.username %}
 
 {% block content %}
 <div class="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -10,7 +11,7 @@
         </h3>
 
         <form
-            action="{{ url_for('buy_plane', model_name=model.name) }}"
+            action="{{ url_for('game.buy_plane', model_name=model.name, username=username) }}"
             method="post"
             class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3"
         >

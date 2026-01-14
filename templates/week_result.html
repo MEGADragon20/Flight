@@ -1,4 +1,5 @@
 {% extends "base.html"%}
+{% set username = request.view_args.username %}
 {% block content %}
 <div class="max-w-2xl mx-auto">
     <div class="bg-white rounded-lg shadow-xl p-8">
@@ -49,10 +50,10 @@
         {% endif %}
         
         <div class="text-center space-x-4">
-            <a href="{{ url_for('calendar') }}" class="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition font-semibold">
+            <a href="{{ url_for('game.calendar', username=username) }}" class="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition font-semibold">
                 📅 Flüge planen
             </a>
-            <a href="{{ url_for('index') }}" class="inline-block bg-gray-600 text-white px-8 py-3 rounded-lg hover:bg-gray-700 transition font-semibold">
+            <a href="{{ url_for('game.index', username=username) }}" class="inline-block bg-gray-600 text-white px-8 py-3 rounded-lg hover:bg-gray-700 transition font-semibold">
                 🏠 Dashboard
             </a>
         </div>

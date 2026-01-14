@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% set username = request.view_args.username %}
 
 {% block content %}
 
@@ -17,7 +18,7 @@
                 Übersicht über Wirtschaft, Einnahmen, Wartungskosten und andere Dinge,
                 die man ignoriert, bis es finanziell brennt.
             </p>
-            <a href="{{ url_for('wiki', article='mechanics') }}" class="text-blue-600 font-semibold">
+            <a href="{{ url_for('game.wiki', article='mechanics', username=username) }}" class="text-blue-600 font-semibold">
                 Zum Artikel →
             </a>
         </div>
@@ -28,7 +29,7 @@
                 Modelle, Kapazitäten und Legenden von Maschinen,
                 die viel zu teuer waren, aber glänzen.
             </p>
-            <a href="{{ url_for('wiki_plane', planename='overview') }}" class="text-blue-600 font-semibold">
+            <a href="{{ url_for('game.wiki_plane', planename='overview', username=username) }}" class="text-blue-600 font-semibold">
                 Flugzeugübersicht →
             </a>
         </div>
@@ -39,7 +40,7 @@
                 Hub-Strategien, profitables Routing und
                 die ewige Frage: Warum fliegt hier niemand hin?
             </p>
-            <a href="{{ url_for('wiki', article='routes') }}" class="text-blue-600 font-semibold">
+            <a href="{{ url_for('game.wiki', article='routes', username=username) }}" class="text-blue-600 font-semibold">
                 Mehr erfahren →
             </a>
         </div>
@@ -53,7 +54,7 @@
     <div class="space-y-4">
         <div class="p-4 bg-gray-50 rounded-lg border">
             <h3 class="text-lg font-bold">
-                <a href="{{ url_for('wiki', article='economy-basics') }}" class="text-blue-600">
+                <a href="{{ url_for('game.wiki', article='economy-basics', username=username) }}" class="text-blue-600">
                     Grundlagen der Spielökonomie
                 </a>
             </h3>
@@ -65,7 +66,7 @@
 
         <div class="p-4 bg-gray-50 rounded-lg border">
             <h3 class="text-lg font-bold">
-                <a href="{{ url_for('wiki_plane', planename='starter-fleet') }}" class="text-blue-600">
+                <a href="{{ url_for('game.wiki_plane', planename='starter-fleet', username=username) }}" class="text-blue-600">
                     Einsteigerflotte: Was lohnt sich?
                 </a>
             </h3>
@@ -77,7 +78,7 @@
 
         <div class="p-4 bg-gray-50 rounded-lg border">
             <h3 class="text-lg font-bold">
-                <a href="{{ url_for('wiki', article='flight-planning') }}" class="text-blue-600">
+                <a href="{{ url_for('game.wiki', article='flight-planning', username=username) }}" class="text-blue-600">
                     Flugplanung & Zeitmanagement
                 </a>
             </h3>

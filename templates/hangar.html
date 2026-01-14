@@ -1,4 +1,5 @@
 {% extends "base.html"%}
+{% set username = request.view_args.username %}
 {% block content %}
 <div class="bg-white rounded-lg shadow-md p-6">
     <h1 class="text-3xl font-bold mb-6">✈️ Hangar - Deine Flotte</h1>
@@ -41,7 +42,7 @@
                     <p class="text-sm text-gray-600">Geplante Flüge:</p>
                     <p class="font-bold text-purple-600">{{ plane.flights|length }}</p>
                 </div>
-                <a href="{{ url_for('sell_plane', registration=plane.registration) }}" class="mt-4 inline-block bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">Flugzeug verkaufen</a>
+                <a href="{{ url_for('game.sell_plane', registration=plane.registration, username=username) }}" class="mt-4 inline-block bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">Flugzeug verkaufen</a>
             </div>
             {% endfor %}
         </div>

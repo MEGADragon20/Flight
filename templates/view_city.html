@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% set username = request.view_args.username %}
 {% block content %}
 
 <div class="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -26,7 +27,7 @@
                     {{ hub.name }} <span class="text-sm text-500">(Level: {{ hub.level}})</span>
                 </div>
                 <br>
-                <form method="POST" action="{{ url_for('upgrade_hub', city_short = city.short) }}">
+                <form method="POST" action="{{ url_for('game.upgrade_hub', city_short = city.short, username=username) }}">
                     <button type="submit" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition">
                         Upgrade Hub
                     </button>
@@ -52,7 +53,7 @@
                     No Presence
                 </div>
                 <br>
-                <form method="POST" action="{{ url_for('upgrade_hub', city_short = city.short) }}">
+                <form method="POST" action="{{ url_for('game.upgrade_hub', city_short = city.short, username=username) }}">
                     <button type="submit" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition">
                         Build Hub
                     </button>
@@ -94,7 +95,7 @@
         <tbody>
 {% for other, value in incoming|sort(attribute=1, reverse=True) %}
     <tr class="border-b hover:bg-gray-50 cursor-pointer"
-        onclick="location.href='{{ url_for('view_route', origin=other.name, destination=city.name) }}'">
+        onclick="location.href='{{ url_for('game.view_route', origin=other.name, destination=city.name, username=username) }}'">
         <td class="py-2 font-semibold">{{ other.name }} ({{ other.short }})</td>
         <td class="py-2 text-right">{{ value }}</td>
     </tr>
@@ -139,7 +140,7 @@
 
             {% for other, value in outgoing|sort(attribute=1, reverse=True) %}
                 <tr class="border-b hover:bg-gray-50 cursor-pointer"
-                    onclick="location.href='{{ url_for('view_route', origin=city.name, destination=other.name) }}'">
+                    onclick="location.href='{{ url_for('game.view_route', origin=city.name, destination=other.name, username=username) }}'">
                     <td class="py-2 font-semibold">{{ other.name }} ({{ other.short }})</td>
                     <td class="py-2 text-right">{{ value }}</td>
                 </tr>

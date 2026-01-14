@@ -1,4 +1,5 @@
 {% extends "base.html"%}
+{% set username = request.view_args.username %}
 {% block content %}
 <div class="bg-white rounded-lg shadow-md p-6 mb-6">
     <h1 class="text-3xl font-bold mb-6">📅 Flugplan - Woche {{ manager.week }}</h1>
@@ -6,7 +7,7 @@
     <!-- Tag-Navigation -->
     <div class="flex space-x-2 mb-6 overflow-x-auto">
         {% for day_code, day_name in days.items() %}
-        <a href="{{ url_for('calendar', day=day_code) }}" 
+        <a href="{{ url_for('game.calendar', day=day_code, username=username) }}" 
            class="px-4 py-2 rounded-lg font-semibold transition whitespace-nowrap
                   {% if current_day == day_code %}
                       bg-blue-600 text-white
@@ -22,7 +23,7 @@
     <!-- Flug hinzufügen -->
     <div class="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg mb-6">
         <h3 class="font-bold mb-3">✈️ Neuen Flug planen</h3>
-        <form method="POST" action="{{ url_for('add_flight') }}" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
+        <form method="POST" action="{{ url_for('game.add_flight', username=username) }}" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
             <input type="hidden" name="day" value="{{ current_day }}">
             
             <select name="plane" id="plane-select" required class="border rounded px-3 py-2 text-sm">
@@ -115,7 +116,7 @@
                                     </span>
                                 </div>
                             </div>
-                            <form method="POST" action="{{ url_for('delete_flight') }}" class="ml-4">
+                            <form method="POST" action="{{ url_for('game.delete_flight', username=username) }}" class="ml-4">
                                 <input type="hidden" name="plane" value="{{ flight.plane.registration }}">
                                 <input type="hidden" name="start" value="{{ flight.start }}">
                                 <input type="hidden" name="day" value="{{ current_day }}">

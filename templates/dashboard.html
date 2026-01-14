@@ -1,4 +1,5 @@
 {% extends "base.html"%}
+{% set username = request.view_args.username %}
 {% block content %}
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
     <div class="bg-white rounded-lg shadow-md p-6 card-hover">
@@ -73,15 +74,15 @@
 <div class="bg-white rounded-lg shadow-md p-6">
     <h2 class="text-xl font-bold mb-4">🎮 Aktionen</h2>
     <div class="flex space-x-4">
-        <a href="{{ url_for('calendar') }}" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
+        <a href="{{ url_for('game.calendar', username=username) }}" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
             📅 Flüge planen
         </a>
-        <form method="POST" action="{{ url_for('advance_week') }}" onsubmit="return confirm('Woche vergehen lassen?');">
+        <form method="POST" action="{{ url_for('game.advance_week', username=username) }}" onsubmit="return confirm('Woche vergehen lassen?');">
             <button type="submit" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition" {% if not manager.flights or issues %}disabled class="bg-gray-400 cursor-not-allowed"{% endif %}>
                 ⏭️ Nächste Woche
             </button>
         </form>
-        <form method="POST" action="{{ url_for('reset') }}" onsubmit="return confirm('Spiel wirklich zurücksetzen?');">
+        <form method="POST" action="{{ url_for('game.reset', username=username) }}" onsubmit="return confirm('Spiel wirklich zurücksetzen?');">
             <button type="submit" class="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition">
                 🔄 Neustart
             </button>
