@@ -73,7 +73,7 @@ def return_game_blueprint():
         try:
             manager.buy_plane(model_name, request.form['registration'], manager.find_city(request.form['city']))
             save_manager(manager)
-            return redirect(url_for('hangar'))
+            return redirect(url_for('game.hangar', username=username))
         except ValueError as e:
             return render_template("shop.html", manager=manager, error=str(e))
 
@@ -83,7 +83,7 @@ def return_game_blueprint():
         try:
             manager.sell_plane(registration)
             save_manager(manager)
-            return redirect(url_for('hangar'))
+            return redirect(url_for('game.hangar', username=username))
         except ValueError as e:
             return render_template("hangar.html", manager=manager, error=str(e))
 
@@ -109,10 +109,10 @@ def return_game_blueprint():
         if not hub:
             manager.hubs.append(Hub(manager.find_city(city_short)))
             save_manager(manager)
-            return redirect(url_for('view_city', city_name=city_short))
+            return redirect(url_for('game.view_city', username=username, city_name=city_short))
         hub.upgrade()
         save_manager(manager)
-        return redirect(url_for('view_city', city_name=city_short))
+        return redirect(url_for('game.view_city', username=username, city_name=city_short))
 
     @game_bp.route('/routes/<origin>/<destination>')
     def view_route(origin, destination, username):
@@ -166,10 +166,10 @@ def return_game_blueprint():
             manager.create_flight(origin, destination, plane, start, max_passengers)
             save_manager(manager)
             
-            return redirect(url_for('calendar', day=day))
+            return redirect(url_for('game.calendar', username=username, day=day))
         except Exception as e:
             print(e)
-            return redirect(url_for('calendar', error=str(e)))
+            return redirect(url_for('game.calendar', username=username, error=str(e)))
 
     @game_bp.route('/calendar/delete', methods=['POST'])
     def delete_flight(username):
@@ -180,8 +180,8 @@ def return_game_blueprint():
         
         manager.delete_flight(plane_reg, start_str)
         save_manager(manager)
-        
-        return redirect(url_for('calendar', day=day))
+
+        return redirect(url_for('game.calendar', username=username, day=day))
 
     @game_bp.route('/advance_week', methods=['POST'])
     def advance_week(username):
@@ -193,12 +193,12 @@ def return_game_blueprint():
             return render_template("week_result.html", result=result, manager=manager)
         except ValueError as e:
             print("Error advancing week:", e)
-            return redirect(url_for('index'))
+            return redirect(url_for('game.index', username=username))
 
     @game_bp.route('/reset', methods=['POST'])
     def reset(username):
         r.delete(f"game:{g.user_id}")
-        return redirect(url_for('index'))
+        return redirect(url_for('game.index', username=username))
 
     
     # wiki!
@@ -226,7 +226,7 @@ def return_game_blueprint():
     @game_bp.route('/favicon.ico')
     def favicon(username):
         print("Favicon requested")
-        return redirect(url_for('static', filename='favicon.png'))
+        return redirect(url_for('game.static', username = username, filename='favicon.png'))
     
     @game_bp.route("/static/<path:filename>")
     def static_files(filename, username):
