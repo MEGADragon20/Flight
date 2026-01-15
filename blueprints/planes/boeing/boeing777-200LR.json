@@ -1,0 +1,46 @@
+{
+    "name": "Boeing 777-200LR",
+    "capacity": 301,
+    "range": 15840,
+    "velocity": 15.75,
+    "price": 320000000,
+    "maintenance": 3000,
+    "pilots": 4,
+    "seat_config": [
+        {
+            "name": "Standard",
+            "economy": 264,
+            "premium": 0,
+            "business": 38,
+            "first": 0
+        },
+        {
+            "name": "Air India V1",
+            "economy": 198,
+            "premium": 0,
+            "business": 35,
+            "first": 8
+        },
+        {
+            "name":"Air India V2",
+            "economy": 212,
+            "premium": 48,
+            "business": 28,
+            "first": 0  
+        },
+        {
+            "name": "Qatar AW V2",
+            "economy": 234,
+            "premium": 0,
+            "business": 42,
+            "first": 0
+        },
+        {
+            "name": "Air Canada", 
+            "economy": 236,
+            "premium": 24,
+            "business": 40,
+            "first": 0
+        }
+    ]
+}

@@ -1,0 +1,20 @@
+{
+    "name": "Airbus A220-ACJ",
+    "capacity": 20,
+    "range": 10500,
+    "velocity": 14.5,
+    "price": 30000000,
+    "fuel": 21918,
+    "seat_configs": [
+        {
+            "name": "Business",
+            "business": 20
+        },
+        {
+            "name": "Premium",
+            "first": 10
+        }
+    ],
+    "maintenance": 900,
+    "pilots": 2
+}

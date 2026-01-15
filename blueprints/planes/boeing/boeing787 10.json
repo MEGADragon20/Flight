@@ -1,0 +1,9 @@
+{
+    "name": "Boeing 787-10",
+    "capacity": 242,
+    "range": 7300,
+    "velocity": 15.9,
+    "price": 250000,
+    "maintenance": 1600,
+    "pilots": 2
+}

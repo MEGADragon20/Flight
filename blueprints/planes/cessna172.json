@@ -1,0 +1,9 @@
+{
+    "name": "Cessna 172",
+    "capacity": 3,
+    "range": 1200,
+    "velocity": 4,
+    "price": 15000,
+    "maintenance": 150,
+    "pilots": 1
+}

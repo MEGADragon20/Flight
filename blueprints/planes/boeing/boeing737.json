@@ -1,0 +1,9 @@
+{
+    "name": "Boeing 737",
+    "capacity": 189,
+    "range": 3550,
+    "velocity": 15.0,
+    "price": 100000,
+    "maintenance": 1150,
+    "pilots": 2
+}

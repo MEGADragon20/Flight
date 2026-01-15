@@ -1,0 +1,10 @@
+{
+    "name": "Concorde",
+    "capacity": 100,
+    "range": 7222,
+    "velocity": 36.3,
+    "price": 2000000,
+    "maintenance": 10000,
+    "pilots": 2,
+    "fuel": 11950
+}
