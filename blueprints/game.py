@@ -1,6 +1,6 @@
 from flask import Blueprint, json, render_template, g, redirect, url_for, request, app
 import redis, os
-from ..main import AirlineManager, Instant, Hub, get_potential_passenger_demand, get_route_demand
+from main import AirlineManager, Instant, Hub, get_potential_passenger_demand, get_route_demand
 from dotenv import load_dotenv
 
 
