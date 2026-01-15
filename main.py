@@ -379,6 +379,7 @@ class AirlineManager:
         return None
 
     def find_model(self, name: str) -> Optional[PlaneModel]:
+        print(self.available_models)
         for model in self.available_models:
             if model.name.lower() == name.lower():
                 return model

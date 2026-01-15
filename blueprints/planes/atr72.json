@@ -1,9 +1,0 @@
-{
-    "name": "ATR 72",
-    "capacity": 72,
-    "range": 1600,
-    "velocity": 9,
-    "price": 65000,
-    "maintenance": 400,
-    "pilots": 2
-}
